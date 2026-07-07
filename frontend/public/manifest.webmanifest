@@ -1,0 +1,9 @@
+{
+  "name": "Meine Fahrzeuge",
+  "short_name": "Fahrzeuge",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f0eee9",
+  "theme_color": "#efece5",
+  "icons": []
+}

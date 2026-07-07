@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#f0eee9;font-family:'Kalam',system-ui,sans-serif;color:#1f1f1f}
+  a{color:#2a6fdb}a:hover{color:#1b52ad}
+  .dv-turn{padding:40px 44px 34px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}
+  .dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 22px}
+  .dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}
+  .dv-tname{font:600 14px/1.2 system-ui,sans-serif;color:#1a1a1a}
+  .dv-opts{display:flex;flex-wrap:wrap;gap:34px;align-items:flex-start}
+  .dv-opt{flex:none;display:flex;flex-direction:column;gap:10px;scroll-margin-top:16px}
+  .dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}
+  .dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 12px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55)}
+  .dv-card{max-width:100%;background:#fbfaf7;border:2px solid #1f1f1f;border-radius:9px;box-shadow:5px 5px 0 rgba(0,0,0,.11);overflow:hidden}
+  .dv-opt:target .dv-oid{background:#2a78d6;color:#fff}
+  .dv-next{margin:24px 0 0;font:12px/1.6 system-ui,sans-serif;color:rgba(0,0,0,.5)}
+
+  .wf-top{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 18px;border-bottom:2px solid #1f1f1f;background:#efece5}
+  .wf-ttl{font-size:23px;font-weight:700;line-height:1}
+  .wf-sub{font:12px/1.3 ui-monospace,Menlo,monospace;color:#6b6b6b}
+  .wf-body{padding:18px}
+  .row{display:flex;align-items:center;gap:10px}
+  .btn{font-family:'Kalam',cursive;font-size:15px;padding:5px 13px;background:#fff;border:2px solid #1f1f1f;border-radius:225px 14px 235px 14px/14px 235px 14px 225px;cursor:pointer;white-space:nowrap}
+  .btn.pri{background:#1f1f1f;color:#fff}
+  .dot{width:12px;height:12px;border-radius:50%;flex:none;border:1.5px solid rgba(0,0,0,.45)}
+  .red{background:#d64c4c}.amber{background:#e0a022}.green{background:#3f9d5a}.grey{background:#cfccc4}
+  .ph{background-image:repeating-linear-gradient(45deg,#e5e2da 0 6px,#f4f2ec 6px 12px);border:1.5px dashed #9a968c;display:flex;align-items:center;justify-content:center;color:#7c786e;font:10px/1.3 ui-monospace,Menlo,monospace;text-align:center}
+  .gcal{display:inline-flex;align-items:center;gap:7px;font:13px/1 system-ui,sans-serif;padding:5px 11px;border:1.5px solid #1f1f1f;border-radius:7px;background:#fff;white-space:nowrap}
+  .gcal .gi{width:15px;height:15px;border-radius:3px;background:conic-gradient(#4285F4 0 25%,#EA4335 0 50%,#FBBC05 0 75%,#34A853 0);flex:none}
+  .vcard{border:2px solid #1f1f1f;border-radius:8px;background:#fff;padding:13px}
+  .vicon{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1;border:2px solid #1f1f1f;border-radius:9px;background:#fff;flex:none}
+  .line{border:none;border-top:1.5px dashed rgba(0,0,0,.22);margin:11px 0}
+  .mono{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#6b6b6b}
+  .task{display:grid;grid-template-columns:14px 88px 1fr auto;align-items:center;gap:9px;font-size:15px;padding:5px 0}
+  .task .ort{font:11px/1.2 system-ui,sans-serif;color:#6b6b6b}
+  .warn{display:flex;align-items:center;gap:11px;padding:9px 13px;border:2px solid #1f1f1f;border-left-width:7px;border-radius:7px;background:#fff;font-size:15px}
+  .stat{display:inline-flex;align-items:center;gap:6px;font:12px/1 system-ui,sans-serif;padding:4px 9px;border-radius:20px;border:1.5px solid #1f1f1f;background:#fff}
+  .badge{font:11px/1 system-ui,sans-serif;padding:3px 8px;border-radius:5px;border:1.5px solid #1f1f1f;white-space:nowrap}
+
+  .cal{display:grid;grid-template-columns:repeat(7,1fr);border:2px solid #1f1f1f;border-radius:7px;overflow:hidden;background:#fff}
+  .cal .hd{font:600 11px/1 system-ui,sans-serif;padding:7px 4px;text-align:center;background:#efece5;border-bottom:2px solid #1f1f1f}
+  .cal .cell{min-height:62px;padding:5px;border-right:1px solid rgba(0,0,0,.1);border-top:1px solid rgba(0,0,0,.1);font:600 11px/1 system-ui,sans-serif}
+  .cal .cell.mut{color:#bdbab2;background:#f7f5f0}
+  .cal .cell.today{background:#fbf3d8}
+  .evt{font:600 10px/1.2 system-ui,sans-serif;padding:2px 5px;border-radius:4px;margin-top:4px;display:flex;align-items:center;gap:4px;border:1px solid rgba(0,0,0,.35);background:#fff}
+
+  .tl-axis{display:grid;grid-template-columns:110px repeat(12,1fr);border:2px solid #1f1f1f;border-radius:7px 7px 0 0;background:#efece5}
+  .tl-axis span{font:600 11px/1 system-ui,sans-serif;text-align:center;padding:7px 0;border-right:1px dashed rgba(0,0,0,.18)}
+  .tl-axis span:first-child{border-right:2px solid #1f1f1f}
+  .lane{position:relative;display:grid;grid-template-columns:110px 1fr;border-left:2px solid #1f1f1f;border-right:2px solid #1f1f1f;border-bottom:1.5px dashed rgba(0,0,0,.18)}
+  .lane:last-child{border-bottom:2px solid #1f1f1f;border-radius:0 0 7px 7px}
+  .lane-name{font:600 13px/1.1 system-ui,sans-serif;padding:14px 9px;border-right:2px solid #1f1f1f;display:flex;align-items:center;gap:8px}
+  .lane-track{position:relative;height:58px}
+  .marker{position:absolute;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:3px;width:70px}
+  .marker .pill{font:600 10px/1 system-ui,sans-serif;padding:3px 6px;border:1.5px solid #1f1f1f;border-radius:20px;background:#fff;display:flex;align-items:center;gap:4px;white-space:nowrap}
+  .marker .dd{font:9px/1 ui-monospace,Menlo,monospace;color:#6b6b6b}
+  .today-line{position:absolute;top:0;bottom:0;width:0;border-left:2px dashed #d64c4c;z-index:2}
+
+  .tabbar{display:flex;border-bottom:2px solid #1f1f1f;background:#f4f2ec}
+  .tabbar button{flex:1;font-family:'Kalam',cursive;font-size:15px;padding:9px 4px;background:transparent;border:none;border-right:1px dashed rgba(0,0,0,.22);color:#1f1f1f;cursor:pointer}
+  .tabbar button:last-child{border-right:none}
+  .nextbar{display:flex;align-items:center;gap:12px;padding:11px 18px;background:#fbf3d8;border-bottom:2px solid #1f1f1f;font-size:15px}
+  .kpi{border:2px solid #1f1f1f;border-radius:8px;padding:11px 14px;background:#fff;flex:1}
+  .kpi .n{font-size:24px;font-weight:700;line-height:1.1}
+  .kpi .k{font:11px/1.2 system-ui,sans-serif;color:#6b6b6b}
+  .chipbtn{font:12px/1 system-ui,sans-serif;padding:6px 11px;border:1.5px solid #1f1f1f;border-radius:6px;background:#fff;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+  .step{display:flex;align-items:center;gap:8px;font:13px/1 system-ui,sans-serif}
+  .stepn{width:23px;height:23px;border-radius:50%;border:2px solid #1f1f1f;display:flex;align-items:center;justify-content:center;font:600 12px system-ui,sans-serif;background:#fff;flex:none}
+  .stepn.on{background:#1f1f1f;color:#fff}
+  .slot{font:600 13px/1 system-ui,sans-serif;padding:8px 0;text-align:center;border:1.5px solid #1f1f1f;border-radius:6px;background:#fff;cursor:pointer}
+  .slot.on{background:#1f1f1f;color:#fff}
+  .slot.off{color:#bdbab2;border-style:dashed;cursor:default}
+  .doc{display:flex;align-items:center;gap:9px;font:13px/1.2 system-ui,sans-serif;padding:7px 10px;border:1.5px solid #1f1f1f;border-radius:6px;background:#fff}
+  .ampel{display:flex;flex-direction:column;gap:3px;align-items:center;padding:4px;border:1.5px solid #1f1f1f;border-radius:7px;background:#faf8f3}
+  .ampel .d{width:12px;height:12px;border-radius:50%;border:1.5px solid rgba(0,0,0,.4);opacity:.25}
+  .ampel .d.on{opacity:1}
+  .weekcell{border:1.5px solid #1f1f1f;border-radius:6px;padding:6px 5px;min-height:64px;background:#fff;font:600 11px/1 system-ui,sans-serif}
+  .costrow{display:grid;grid-template-columns:16px 1fr 96px 90px;align-items:center;gap:10px;font-size:14px;padding:7px 0;border-bottom:1.5px dashed rgba(0,0,0,.18)}
+  .botnav{display:flex;border-top:2px solid #1f1f1f;background:#efece5}
+  .botnav div{flex:1;text-align:center;padding:7px 2px;font:600 9px/1.3 system-ui,sans-serif;color:#9a968c}
+  .botnav div.on{color:#1f1f1f}
+  .botnav .i{font-size:17px;display:block;margin-bottom:2px;filter:grayscale(.2)}
+  .mnext{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#fbf3d8;border:2px solid #1f1f1f;border-radius:8px;font-size:13px}
+  .mrow{display:flex;align-items:center;gap:7px;font-size:13px}
+
+  .phone{width:300px;border:3px solid #1f1f1f;border-radius:30px;background:#fbfaf7;box-shadow:5px 5px 0 rgba(0,0,0,.11);overflow:hidden}
+  .notch{height:26px;display:flex;align-items:center;justify-content:center;background:#efece5;border-bottom:2px solid #1f1f1f}
+  .notch::before{content:"";width:70px;height:7px;border-radius:6px;background:#1f1f1f}
+  .pbody{padding:14px}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font:12px/1 system-ui,sans-serif;color:#4a4a4a}
+</style>
+</helmet>
+
+<section class="dv-turn" id="t5">
+  <div class="dv-thd"><a class="dv-tid" href="#t5">5</a><span class="dv-tname">Erweiterung: km-Stand regelmäßig eintragen + Push-Erinnerung alle 4 Wochen — für <a class="dv-oid" href="#3a">3a</a> (Desktop) &amp; <a class="dv-oid" href="#4a">4a</a> (mobil)</span></div>
+
+  <div class="dv-opts">
+
+    <!-- ============ 5a  DESKTOP · km-Modul in der Übersicht (3a) ============ -->
+    <div class="dv-opt" id="5a">
+      <div class="dv-olabel"><a class="dv-oid" href="#5a">5a</a>Übersicht (3a): km-Stand-Modul in der Fahrzeugkarte — Eingabe-Verlauf, Trend, 4-Wochen-Push</div>
+      <div class="dv-card" style="width:600px">
+        <div class="wf-top">
+          <div><div class="wf-ttl">Meine Fahrzeuge</div><div class="wf-sub">// Übersicht · km-Stand pflegen</div></div>
+          <span class="gcal"><span class="gi"></span>Google · verbunden <span class="dot green"></span></span>
+        </div>
+        <div class="wf-body" style="display:flex;flex-direction:column;gap:14px">
+
+          <div class="vcard">
+            <div class="row" style="justify-content:space-between;align-items:flex-start">
+              <div class="row"><div class="vicon">🚗</div><div><div style="font-size:19px;font-weight:700">VW Golf VII</div><div class="mono">HH-AB 1234 · 👤 Anna</div></div></div>
+              <div class="ampel"><span class="d amber on"></span><span class="d amber"></span><span class="d green"></span></div>
+            </div>
+            <hr class="line">
+
+            <!-- KM-STAND: aktueller Wert + Eingabe -->
+            <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:9px">
+              <div><div class="mono">AKTUELLER KM-STAND</div><div style="font-size:26px;font-weight:700;line-height:1.1">84.200 km</div></div>
+              <div style="text-align:right"><div class="mono">zuletzt eingetragen</div><div style="font-size:15px">12.06.2026 · vor 4 Wochen</div></div>
+            </div>
+
+            <div class="row" style="gap:9px;margin-top:11px;flex-wrap:wrap">
+              <span class="mono">NEU EINTRAGEN</span>
+              <div style="display:flex;align-items:center;border:2px solid #1f1f1f;border-radius:7px;overflow:hidden;background:#fff">
+                <input type="text" placeholder="85.350" style="width:92px;border:none;padding:6px 10px;font:600 15px ui-monospace,Menlo,monospace;background:transparent;outline:none">
+                <span style="padding:6px 10px;border-left:1.5px dashed rgba(0,0,0,.22);font:12px ui-monospace,Menlo,monospace;color:#6b6b6b">km</span>
+              </div>
+              <button class="btn pri">Speichern</button>
+              <span class="chipbtn" style="padding:5px 9px">+ 500</span>
+              <span class="chipbtn" style="padding:5px 9px">+ 1.000</span>
+            </div>
+
+            <hr class="line">
+
+            <!-- Verlauf / Trend -->
+            <div class="row" style="justify-content:space-between"><span class="mono">VERLAUF · letzte 6 Monate</span><span class="mono">Ø ~1.150 km / Monat</span></div>
+            <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:9px;align-items:end;height:74px;margin-top:8px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end"><div style="width:70%;height:40%;background:#efece5;border:1.5px solid #1f1f1f;border-radius:4px 4px 0 0"></div><span class="mono" style="font-size:9px">Jan</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end"><div style="width:70%;height:55%;background:#efece5;border:1.5px solid #1f1f1f;border-radius:4px 4px 0 0"></div><span class="mono" style="font-size:9px">Feb</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end"><div style="width:70%;height:48%;background:#efece5;border:1.5px solid #1f1f1f;border-radius:4px 4px 0 0"></div><span class="mono" style="font-size:9px">Mär</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end"><div style="width:70%;height:70%;background:#efece5;border:1.5px solid #1f1f1f;border-radius:4px 4px 0 0"></div><span class="mono" style="font-size:9px">Apr</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end"><div style="width:70%;height:60%;background:#efece5;border:1.5px solid #1f1f1f;border-radius:4px 4px 0 0"></div><span class="mono" style="font-size:9px">Mai</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end"><div style="width:70%;height:85%;background:#e0a022;border:1.5px solid #1f1f1f;border-radius:4px 4px 0 0"></div><span class="mono" style="font-size:9px">Jun</span></div>
+            </div>
+            <div class="mono" style="margin-top:7px;color:#4a4a4a">→ bei diesem Schnitt: Ölservice in ~800 km (~3 Wochen) · Inspektion in ~5.800 km</div>
+
+            <hr class="line">
+
+            <!-- PUSH-ERINNERUNG alle 4 Wochen -->
+            <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:10px">
+              <div class="row" style="gap:10px">
+                <span style="font-size:17px">🔔</span>
+                <div><div style="font-size:15px;font-weight:700">km-Stand-Erinnerung</div><div class="mono">Push · Intervall alle 4 Wochen</div></div>
+              </div>
+              <div class="row" style="gap:10px">
+                <span class="chipbtn" style="padding:5px 9px">alle 4 Wochen ▾</span>
+                <div style="width:46px;height:26px;border:2px solid #1f1f1f;border-radius:20px;background:#1f1f1f;display:flex;align-items:center;padding:0 3px;justify-content:flex-end"><span style="width:18px;height:18px;border-radius:50%;background:#fff"></span></div>
+              </div>
+            </div>
+            <div class="warn" style="border-left-color:#e0a022;font-size:14px;margin-top:4px"><span style="font-size:15px">⏰</span><b>Nächste Erinnerung:</b> Do 09.07.2026 · in 2 Tagen<span style="flex:1"></span><span class="row" style="gap:7px"><span class="chipbtn" style="padding:3px 8px">🔔 Push</span><span class="chipbtn" style="padding:3px 8px;background:#efece5">✉ E-Mail</span></span></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 5b  MOBIL · km-Erinnerung (4a) ============ -->
+    <div class="dv-opt" id="5b">
+      <div class="dv-olabel"><a class="dv-oid" href="#5b">5b</a>Mobil (4a): Push-Erinnerung auf dem Sperrbildschirm → km-Stand in 2 Sekunden eintragen</div>
+      <div class="row" style="gap:20px;align-items:flex-start;flex-wrap:wrap">
+
+        <!-- SCREEN A: Push auf Sperrbildschirm -->
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="pbody" style="display:flex;flex-direction:column;gap:12px;background:repeating-linear-gradient(45deg,#e9e6df 0 8px,#f0ede7 8px 16px);min-height:430px;padding-top:24px">
+            <div style="text-align:center"><div style="font-size:34px;font-weight:700;line-height:1">9:41</div><div class="mono" style="font-size:12px">Montag, 7. Juli</div></div>
+            <div style="flex:1"></div>
+            <!-- Notification -->
+            <div class="vcard" style="padding:12px;box-shadow:3px 3px 0 rgba(0,0,0,.11)">
+              <div class="row" style="gap:8px"><div class="vicon" style="width:24px;height:24px;font-size:13px;border-radius:6px">🔔</div><b style="font-size:13px">Fahrzeug-Wartung</b><span class="mono" style="font-size:10px;margin-left:auto">jetzt</span></div>
+              <div style="font-size:15px;font-weight:700;margin-top:8px">km-Stand eintragen?</div>
+              <div style="font-size:13px;color:#4a4a4a;margin-top:3px">VW Golf · seit 4 Wochen kein Eintrag. Kurz die Tacho-km festhalten.</div>
+              <div class="row" style="gap:8px;margin-top:10px"><button class="btn pri" style="flex:1;text-align:center;justify-content:center;font-size:14px;padding:6px 0">Eintragen</button><button class="btn" style="flex:1;text-align:center;justify-content:center;font-size:14px;padding:6px 0">Später</button></div>
+            </div>
+            <div class="mnext" style="opacity:.7"><span style="font-size:14px">⏰</span>nächste Erinnerung in 4 Wochen</div>
+          </div>
+        </div>
+
+        <!-- SCREEN B: km eintragen -->
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="pbody" style="display:flex;flex-direction:column;gap:12px">
+            <div class="row" style="gap:8px"><span class="chipbtn" style="padding:2px 8px">‹</span><b style="font-size:16px">km-Stand eintragen</b></div>
+            <span class="badge" style="border-color:#e0a022;color:#a87816;align-self:flex-start">🚗 VW Golf VII</span>
+
+            <div class="vcard" style="padding:14px;text-align:center">
+              <div class="mono">NEUER TACHO-STAND</div>
+              <div class="row" style="justify-content:center;gap:12px;margin-top:8px">
+                <span class="chipbtn" style="width:34px;height:34px;justify-content:center;font-size:20px;padding:0">−</span>
+                <div style="font:700 30px ui-monospace,Menlo,monospace;letter-spacing:1px">85.350</div>
+                <span class="chipbtn" style="width:34px;height:34px;justify-content:center;font-size:20px;padding:0">+</span>
+              </div>
+              <div class="mono" style="margin-top:6px">Einheit: km</div>
+              <div class="row" style="justify-content:center;gap:8px;margin-top:10px"><span class="chipbtn" style="padding:4px 9px">+ 100</span><span class="chipbtn" style="padding:4px 9px">+ 500</span><span class="chipbtn" style="padding:4px 9px">+ 1.000</span></div>
+            </div>
+
+            <div class="row" style="justify-content:space-between;font-size:13px"><span class="mono">zuletzt</span><span>84.200 km · 12.06. · +1.150</span></div>
+
+            <div class="vcard" style="padding:11px">
+              <div class="row" style="justify-content:space-between">
+                <div class="row" style="gap:8px"><span style="font-size:15px">🔔</span><div><b style="font-size:14px">Erinnerung</b><div class="mono">alle 4 Wochen · Push</div></div></div>
+                <div style="width:42px;height:24px;border:2px solid #1f1f1f;border-radius:20px;background:#1f1f1f;display:flex;align-items:center;padding:0 3px;justify-content:flex-end"><span style="width:16px;height:16px;border-radius:50%;background:#fff"></span></div>
+              </div>
+            </div>
+            <div class="mnext"><span style="font-size:14px">⏰</span>nächste Erinnerung: Do 09.07. · in 2 T</div>
+
+            <button class="btn pri" style="text-align:center;justify-content:center">Speichern</button>
+          </div>
+          <div class="botnav"><div class="on"><span class="i">🚗</span>Fahrzeuge</div><div><span class="i">📅</span>Kalender</div><div><span class="i">🔧</span>Buchen</div><div><span class="i">€</span>Kosten</div></div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <p class="dv-next">Nächste Schritte: „<a class="dv-oid" href="#5b">5b</a> als interaktiven Klick-Prototyp" · „km-Trend mit echtem Diagramm" · „Erinnerungs-Intervall pro Fahrzeug einstellbar" · „Ölservice-Prognose datengetrieben aus km-Verlauf"</p>
+</section>
+
+<section class="dv-turn" id="t4">
+  <div class="dv-thd"><a class="dv-tid" href="#t4">4</a><span class="dv-tname">Mobile-Version von <a class="dv-oid" href="#3a">3a</a> — Handoff-ready (5 Screens, Bottom-Nav)</span></div>
+
+  <div class="dv-opts">
+    <div class="dv-opt" id="4a">
+      <div class="dv-olabel"><a class="dv-oid" href="#4a">4a</a>Übersicht · Fahrzeug-Detail · Buchen · Kalender · Kosten — gleiche Features wie 3a, mobil</div>
+      <div class="row" style="gap:20px;align-items:flex-start;flex-wrap:wrap">
+
+        <!-- SCREEN 1: ÜBERSICHT -->
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="pbody" style="display:flex;flex-direction:column;gap:11px">
+            <div class="row" style="justify-content:space-between"><div style="font-size:19px;font-weight:700">Meine Fahrzeuge</div><span class="gcal" style="padding:3px 7px;font-size:11px"><span class="gi"></span>synced</span></div>
+            <div class="mnext"><span style="font-size:15px">⏰</span><b>Als Nächstes:</b> Golf · Öl in ~5 T<span style="flex:1"></span><span class="chipbtn" style="padding:3px 8px">Buchen</span></div>
+            <div class="row" style="gap:7px"><span class="chipbtn" style="padding:4px 9px">Alle Arten ▾</span><span class="chipbtn" style="padding:4px 9px">Dringlichkeit ▾</span></div>
+            <div class="vcard" style="padding:10px">
+              <div class="row" style="justify-content:space-between"><div class="row" style="gap:8px"><div class="vicon" style="width:30px;height:30px;font-size:17px">🚗</div><div><b style="font-size:15px">VW Golf VII</b><div class="mono">84.200 km · 👤 Anna</div></div></div><div class="ampel" style="flex-direction:row;padding:3px 5px"><span class="d red on"></span><span class="d amber"></span><span class="d green"></span></div></div>
+              <hr class="line" style="margin:8px 0"><div class="mrow"><span class="dot red"></span>TÜV überfällig <span class="mono" style="margin-left:auto">seit 06/26</span></div>
+            </div>
+            <div class="vcard" style="padding:10px">
+              <div class="row" style="justify-content:space-between"><div class="row" style="gap:8px"><div class="vicon" style="width:30px;height:30px;font-size:17px">🚗</div><div><b style="font-size:15px">Škoda Octavia</b><div class="mono">41.900 km · 👤 Tom</div></div></div><div class="ampel" style="flex-direction:row;padding:3px 5px"><span class="d red"></span><span class="d amber on"></span><span class="d green"></span></div></div>
+              <hr class="line" style="margin:8px 0"><div class="mrow"><span class="dot green"></span>TÜV 14.10. <span class="mono" style="margin-left:auto">vereinbart</span></div>
+            </div>
+            <div class="vcard" style="padding:10px">
+              <div class="row" style="justify-content:space-between"><div class="row" style="gap:8px"><div class="vicon" style="width:30px;height:30px;font-size:17px">🏍️</div><div><b style="font-size:15px">BMW R 1250 GS</b><div class="mono">31.400 km · 👤 Anna</div></div></div><div class="ampel" style="flex-direction:row;padding:3px 5px"><span class="d red"></span><span class="d amber"></span><span class="d green on"></span></div></div>
+              <hr class="line" style="margin:8px 0"><div class="mrow"><span class="dot green"></span>alles im Plan <span class="mono" style="margin-left:auto">nächste ~09</span></div>
+            </div>
+          </div>
+          <div class="botnav"><div class="on"><span class="i">🚗</span>Fahrzeuge</div><div><span class="i">📅</span>Kalender</div><div><span class="i">🔧</span>Buchen</div><div><span class="i">€</span>Kosten</div></div>
+        </div>
+
+        <!-- SCREEN 2: FAHRZEUG-DETAIL -->
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="pbody" style="display:flex;flex-direction:column;gap:10px">
+            <div class="row" style="gap:8px"><span class="chipbtn" style="padding:2px 8px">‹</span><b style="font-size:16px">VW Golf VII</b><span class="ampel" style="flex-direction:row;padding:3px 5px;margin-left:auto"><span class="d red on"></span><span class="d amber"></span><span class="d green"></span></span></div>
+            <div class="ph" style="height:64px;border-radius:6px">Foto Fahrzeug</div>
+            <div class="row" style="gap:7px"><span class="chipbtn" style="padding:4px 9px">84.200 km ✎</span><span class="stat" style="padding:3px 8px">👤 Anna</span></div>
+            <div class="mono">→ nächster Ölservice in ~800 km</div>
+            <div class="vcard" style="padding:10px;display:flex;flex-direction:column;gap:7px">
+              <div class="mrow"><span class="dot red"></span>TÜV / HU <span class="chipbtn" style="margin-left:auto;padding:2px 8px">buchen</span></div>
+              <div class="mrow"><span class="dot amber"></span>Ölwechsel <span class="chipbtn" style="margin-left:auto;padding:2px 8px">buchen</span></div>
+              <div class="mrow"><span class="dot green"></span>Inspektion <span class="mono" style="margin-left:auto">18.09. Meyer</span></div>
+            </div>
+            <div class="mono">DOKUMENTE</div>
+            <div class="doc" style="padding:6px 9px">📄 TÜV-Bericht 2024.pdf</div>
+            <div class="doc" style="padding:6px 9px">📄 Rechnung Inspektion.pdf</div>
+            <div class="mono">HISTORIE</div>
+            <div class="mrow"><span class="dot grey"></span>03/26 · Öl — 89 €</div>
+            <div class="mrow"><span class="dot grey"></span>08/24 · HU/AU — 133 €</div>
+          </div>
+          <div class="botnav"><div class="on"><span class="i">🚗</span>Fahrzeuge</div><div><span class="i">📅</span>Kalender</div><div><span class="i">🔧</span>Buchen</div><div><span class="i">€</span>Kosten</div></div>
+        </div>
+
+        <!-- SCREEN 3: BUCHEN -->
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="pbody" style="display:flex;flex-direction:column;gap:10px">
+            <div class="row" style="gap:8px"><span class="chipbtn" style="padding:2px 8px">‹</span><b style="font-size:16px">Termin buchen</b></div>
+            <span class="badge" style="border-color:#e0a022;color:#a87816;align-self:flex-start">🚗 Golf · Ölwechsel</span>
+            <div class="row" style="gap:9px;font-size:11px"><span class="step"><span class="stepn on" style="width:19px;height:19px">1</span></span><span class="step"><span class="stepn on" style="width:19px;height:19px">2</span></span><span class="step"><span class="stepn" style="width:19px;height:19px">3</span></span><span class="step"><span class="stepn" style="width:19px;height:19px">4</span></span></div>
+            <div class="mono">WERKSTATT</div>
+            <label class="vcard" style="padding:9px;display:flex;gap:8px;align-items:center"><input type="radio" name="mwk" checked><div><b style="font-size:14px">Autohaus Meyer</b><div class="mono">2,4 km · ★4.6 · ab 89 €</div></div></label>
+            <label class="vcard" style="padding:9px;display:flex;gap:8px;align-items:center"><input type="radio" name="mwk"><div><b style="font-size:14px">ATU Barmbek</b><div class="mono">3,8 km · ★4.1 · ab 79 €</div></div></label>
+            <div class="mono">TERMINE · Mi 10.09.</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px"><div class="slot off">08:00</div><div class="slot on">11:00</div><div class="slot">13:30</div><div class="slot">14:00</div><div class="slot">16:00</div><div class="slot">16:45</div></div>
+            <div class="mono">ERINNERUNG</div>
+            <div class="row" style="gap:6px;flex-wrap:wrap"><span class="chipbtn" style="padding:4px 8px">4 Wochen ▾</span><span class="chipbtn" style="padding:4px 8px">🔔 Push</span><span class="chipbtn" style="padding:4px 8px">📅 Kalender</span></div>
+            <button class="btn pri" style="text-align:center;justify-content:center"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:conic-gradient(#4285F4 0 25%,#EA4335 0 50%,#FBBC05 0 75%,#34A853 0);vertical-align:-1px;margin-right:6px"></span>Buchen &amp; in Kalender</button>
+          </div>
+        </div>
+
+        <!-- SCREEN 4: KALENDER -->
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="pbody" style="display:flex;flex-direction:column;gap:10px">
+            <div class="row" style="justify-content:space-between"><b style="font-size:16px">Kalender</b><span class="stat" style="padding:3px 8px"><span class="dot green"></span>Google AN</span></div>
+            <div class="row" style="justify-content:center;gap:10px"><span class="chipbtn" style="padding:3px 9px">‹</span><b style="font-size:15px">September 2026</b><span class="chipbtn" style="padding:3px 9px">›</span></div>
+            <div class="mono">ANSTEHEND</div>
+            <div class="vcard" style="padding:9px"><div class="mrow"><span class="dot green"></span><b>Fr 18.09. · 09:00</b></div><div style="font-size:13px;margin-top:2px">Golf · Inspektion — Autohaus Meyer</div><span class="badge" style="border-color:#3f9d5a;color:#2f7444;margin-top:5px;display:inline-block">vereinbart</span></div>
+            <div class="vcard" style="padding:9px"><div class="mrow"><span class="dot amber"></span><b>~29.09.</b></div><div style="font-size:13px;margin-top:2px">Golf · Ölwechsel — Ort offen</div><span class="chipbtn" style="margin-top:5px;padding:3px 8px">Termin buchen</span></div>
+            <div class="vcard" style="padding:9px"><div class="mrow"><span class="dot green"></span><b>Di 14.10. · 11:30</b></div><div style="font-size:13px;margin-top:2px">Octavia · TÜV — TÜV Nord</div><span class="badge" style="border-color:#3f9d5a;color:#2f7444;margin-top:5px;display:inline-block">vereinbart</span></div>
+            <label class="mrow" style="color:#4a4a4a"><input type="checkbox" checked>Google Kalender einblenden</label>
+          </div>
+          <div class="botnav"><div><span class="i">🚗</span>Fahrzeuge</div><div class="on"><span class="i">📅</span>Kalender</div><div><span class="i">🔧</span>Buchen</div><div><span class="i">€</span>Kosten</div></div>
+        </div>
+
+        <!-- SCREEN 5: KOSTEN -->
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="pbody" style="display:flex;flex-direction:column;gap:10px">
+            <div class="row" style="justify-content:space-between"><b style="font-size:16px">Kosten 2026</b><span class="chipbtn" style="padding:3px 8px">Jahr ▾</span></div>
+            <div class="row" style="gap:8px"><div class="kpi" style="padding:9px"><div class="k">Bezahlt</div><div class="n" style="font-size:19px">562 €</div></div><div class="kpi" style="padding:9px"><div class="k">Offen</div><div class="n" style="font-size:19px">418 €</div></div></div>
+            <div class="kpi" style="padding:9px"><div class="k">Prognose gesamt</div><div class="n" style="font-size:19px">980 €</div></div>
+            <div class="ph" style="height:74px;border-radius:7px">Balken · Kosten/Monat</div>
+            <div class="mono">POSTEN</div>
+            <div class="vcard" style="padding:9px;display:flex;flex-direction:column;gap:7px">
+              <div class="mrow"><span class="dot grey"></span>Golf · Öl <span style="margin-left:auto">89 €</span></div>
+              <div class="mrow"><span class="dot grey"></span>Motorrad · HU <span style="margin-left:auto">133 €</span></div>
+              <div class="mrow"><span class="dot green"></span>Golf · Insp. <span style="margin-left:auto">~340 €</span></div>
+              <div class="mrow"><span class="dot amber"></span>Octavia · Insp. <span style="margin-left:auto">~78 €</span></div>
+            </div>
+          </div>
+          <div class="botnav"><div><span class="i">🚗</span>Fahrzeuge</div><div><span class="i">📅</span>Kalender</div><div><span class="i">🔧</span>Buchen</div><div class="on"><span class="i">€</span>Kosten</div></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <p class="dv-next">Nächste Schritte: „<a class="dv-oid" href="#4a">4a</a> in echtes Frontend umsetzen" · „Screen für Werkstätten/Karte mobil ergänzen" · „Interaktiven Klick-Prototyp aus 4a bauen"</p>
+</section>
+
+<section class="dv-turn" id="t3">
+  <div class="dv-thd"><a class="dv-tid" href="#t3">3</a><span class="dv-tname">Ausbau von <a class="dv-oid" href="#2a">2a</a> — alle Verbesserungen eingearbeitet (2 Autos + 1 Motorrad)</span></div>
+
+  <div class="dv-opts">
+    <div class="dv-opt" id="3a">
+      <div class="dv-olabel"><a class="dv-oid" href="#3a">3a</a>Voll ausgebautes Cockpit: Nächste-Aktion · Ampel · km · Fahrer · Dokumente · Historie · Buchen · Erinnerungen · Kosten · Werkstätten · Woche/Monat</div>
+      <div class="dv-card" style="width:900px">
+
+        <div class="wf-top">
+          <div><div class="wf-ttl">Meine Fahrzeuge</div><div class="wf-sub">// 3 Fahrzeuge · 2 offene Warnungen</div></div>
+          <span class="gcal"><span class="gi"></span>Google · verbunden <span class="dot green"></span></span>
+        </div>
+
+        <!-- (8) Nächste-Aktion-Leiste -->
+        <div class="nextbar"><span style="font-size:18px">⏰</span><b>Als Nächstes:</b> Golf · Ölwechsel — fällig in ~5 Tagen / ~800 km<span style="flex:1"></span><button class="btn pri" onClick="{{ s3Book }}">Jetzt buchen</button></div>
+
+        <div class="tabbar">
+          <button onClick="{{ s3Dash }}" style="{{ t3Dash }}">Übersicht</button>
+          <button onClick="{{ s3Cal }}" style="{{ t3Cal }}">Kalender</button>
+          <button onClick="{{ s3Time }}" style="{{ t3Time }}">Zeitstrahl</button>
+          <button onClick="{{ s3Book }}" style="{{ t3Book }}">Buchen</button>
+          <button onClick="{{ s3Cost }}" style="{{ t3Cost }}">Kosten</button>
+          <button onClick="{{ s3Shop }}" style="{{ t3Shop }}">Werkstätten</button>
+        </div>
+
+        <!-- ===== ÜBERSICHT ===== -->
+        <div class="wf-body" style="{{ d3Dash }}">
+          <!-- (9) Filter / Sortierung -->
+          <div class="row" style="flex-wrap:wrap;gap:9px">
+            <span class="mono">FILTER</span>
+            <button class="chipbtn">Alle Arten ▾</button>
+            <button class="chipbtn">Status: alle ▾</button>
+            <span style="flex:1"></span>
+            <span class="mono">SORTIEREN</span>
+            <button class="chipbtn">nach Dringlichkeit ▾</button>
+          </div>
+
+          <!-- Fahrzeug 1: aufgeklappte Detailkarte -->
+          <div class="vcard">
+            <div class="row" style="justify-content:space-between;align-items:flex-start">
+              <div class="row"><div class="vicon">🚗</div><div class="ph" style="width:52px;height:40px;border-radius:5px">Foto</div><div><div style="font-size:19px;font-weight:700">VW Golf VII</div><div class="mono">HH-AB 1234 · 84.200 km</div><div class="row" style="gap:6px;margin-top:4px"><span class="stat" style="padding:2px 8px">👤 Anna</span></div></div></div>
+              <!-- (7) Ampel-Gesamtstatus -->
+              <div class="ampel"><span class="d red on"></span><span class="d amber"></span><span class="d green"></span></div>
+            </div>
+            <hr class="line">
+            <!-- (4) Kilometerstand-Eingabe -->
+            <div class="row" style="gap:9px;flex-wrap:wrap"><span class="mono">KM-STAND</span><span class="chipbtn">84.200 km ✎</span><span style="font-size:13px;color:#6b6b6b">→ nächster Ölservice in ~800 km · Inspektion in ~5.800 km</span></div>
+            <hr class="line">
+            <div class="task"><span class="dot red"></span><span>TÜV / HU</span><span class="ort">überfällig · seit 06/2026</span><button class="chipbtn" onClick="{{ s3Book }}">buchen</button></div>
+            <div class="task"><span class="dot amber"></span><span>Ölwechsel</span><span class="ort">fällig ~08/2026 · in ~800 km</span><button class="chipbtn" onClick="{{ s3Book }}">buchen</button></div>
+            <div class="task"><span class="dot green"></span><span>Inspektion</span><span class="ort">Fr 18.09. 09:00 · Autohaus Meyer</span><span class="badge" style="border-color:#3f9d5a;color:#2f7444">vereinbart</span></div>
+            <hr class="line">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <!-- (5) Dokumente -->
+              <div><div class="mono" style="margin-bottom:6px">DOKUMENTE</div><div style="display:flex;flex-direction:column;gap:6px"><div class="doc">📄 TÜV-Bericht 2024.pdf</div><div class="doc">📄 Rechnung Inspektion.pdf</div><div class="doc" style="border-style:dashed;color:#7c786e">+ Dokument ablegen</div></div></div>
+              <!-- (6) Wartungshistorie -->
+              <div><div class="mono" style="margin-bottom:6px">HISTORIE</div><div style="display:flex;flex-direction:column;gap:6px;font-size:13px"><div class="row"><span class="dot grey"></span>03/2026 · Ölwechsel — 89 €</div><div class="row"><span class="dot grey"></span>08/2024 · HU/AU — 133 €</div><div class="row"><span class="dot grey"></span>07/2024 · Inspektion — 340 €</div></div></div>
+            </div>
+          </div>
+
+          <!-- Fahrzeug 2 & 3: kompakt -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="vcard">
+              <div class="row" style="justify-content:space-between"><div class="row"><div class="vicon">🚗</div><div><div style="font-size:18px;font-weight:700">Škoda Octavia</div><div class="mono">HH-CD 5678 · 41.900 km</div></div></div><div class="ampel"><span class="d red"></span><span class="d amber on"></span><span class="d green"></span></div></div>
+              <hr class="line">
+              <div class="row" style="gap:6px;margin-bottom:6px"><span class="stat" style="padding:2px 8px">👤 Tom</span><span class="chipbtn" style="padding:3px 8px">km ✎</span></div>
+              <div class="task"><span class="dot green"></span><span>TÜV / HU</span><span class="ort">Di 14.10. 11:30 · TÜV Nord</span><span class="badge" style="border-color:#3f9d5a;color:#2f7444">ok</span></div>
+              <div class="task"><span class="dot amber"></span><span>Inspektion</span><span class="ort">fällig 11/2026</span><button class="chipbtn" onClick="{{ s3Book }}">buchen</button></div>
+            </div>
+            <div class="vcard">
+              <div class="row" style="justify-content:space-between"><div class="row"><div class="vicon">🏍️</div><div><div style="font-size:18px;font-weight:700">BMW R 1250 GS</div><div class="mono">HH-MR 088 · 31.400 km</div></div></div><div class="ampel"><span class="d red"></span><span class="d amber"></span><span class="d green on"></span></div></div>
+              <hr class="line">
+              <div class="row" style="gap:6px;margin-bottom:6px"><span class="stat" style="padding:2px 8px">👤 Anna</span><span class="chipbtn" style="padding:3px 8px">km ✎</span></div>
+              <div class="task"><span class="dot green"></span><span>TÜV / HU</span><span class="ort">Sa 22.08. 10:00 · TÜV Nord</span><span class="badge" style="border-color:#3f9d5a;color:#2f7444">ok</span></div>
+              <div class="task"><span class="dot amber"></span><span>Ölwechsel</span><span class="ort">fällig ~09/2026</span><button class="chipbtn" onClick="{{ s3Book }}">buchen</button></div>
+            </div>
+          </div>
+
+          <div class="legend"><span class="row"><span class="dot red"></span>überfällig</span><span class="row"><span class="dot amber"></span>bald fällig</span><span class="row"><span class="dot green"></span>vereinbart</span><span class="row"><span class="d on red" style="width:11px;height:11px;border-radius:50%;border:1.5px solid rgba(0,0,0,.4)"></span>Ampel = Gesamtzustand</span></div>
+        </div>
+
+        <!-- ===== KALENDER (Monat + Woche) ===== -->
+        <div class="wf-body" style="{{ d3Cal }}">
+          <div class="row" style="justify-content:space-between">
+            <div class="row"><button class="btn" style="padding:3px 11px">‹</button><b style="font-size:19px;min-width:150px;text-align:center">September 2026</b><button class="btn" style="padding:3px 11px">›</button></div>
+            <div class="row"><span class="stat"><span class="dot green"></span>Google AN</span><div style="display:flex;border:2px solid #1f1f1f;border-radius:7px;overflow:hidden"><span style="padding:5px 12px;background:#1f1f1f;color:#fff;font-size:14px">Monat</span><span style="padding:5px 12px;font-size:14px">Woche</span></div></div>
+          </div>
+          <div class="cal">
+            <div class="hd">Mo</div><div class="hd">Di</div><div class="hd">Mi</div><div class="hd">Do</div><div class="hd">Fr</div><div class="hd">Sa</div><div class="hd">So</div>
+            <div class="cell mut">31</div><div class="cell">1</div><div class="cell">2</div><div class="cell">3</div><div class="cell">4</div><div class="cell">5</div><div class="cell">6</div>
+            <div class="cell">7</div><div class="cell">8</div><div class="cell">9</div><div class="cell">10</div><div class="cell">11</div><div class="cell">12</div><div class="cell">13</div>
+            <div class="cell">14<div class="evt" style="border-color:#3f9d5a"><span class="dot green"></span>Octavia · TÜV</div></div><div class="cell">15</div><div class="cell">16</div><div class="cell">17</div>
+            <div class="cell">18<div class="evt" style="border-color:#3f9d5a"><span class="dot green"></span>Golf · Insp. 09:00</div></div>
+            <div class="cell">19</div><div class="cell">20</div>
+            <div class="cell">21</div><div class="cell">22</div><div class="cell">23</div><div class="cell">24</div><div class="cell">25</div><div class="cell">26</div><div class="cell">27</div>
+            <div class="cell">28</div>
+            <div class="cell">29<div class="evt" style="border-color:#e0a022"><span class="dot amber"></span>Golf · Öl fällig</div></div>
+            <div class="cell">30</div><div class="cell mut">1</div><div class="cell mut">2</div><div class="cell mut">3</div><div class="cell mut">4</div>
+          </div>
+          <div class="mono">// WOCHENANSICHT · KW 38</div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:7px">
+            <div class="weekcell">Mo 15</div><div class="weekcell">Di 16</div><div class="weekcell">Mi 17</div>
+            <div class="weekcell">Do 18<div class="evt" style="border-color:#3f9d5a;margin-top:5px"><span class="dot green"></span>Golf 09:00</div></div>
+            <div class="weekcell">Fr 19</div><div class="weekcell">Sa 20</div><div class="weekcell">So 21</div>
+          </div>
+          <div class="row" style="justify-content:space-between"><span class="gcal"><span class="gi"></span>synchron mit Google Kalender</span><button class="btn pri" onClick="{{ s3Book }}">+ Termin anlegen</button></div>
+        </div>
+
+        <!-- ===== ZEITSTRAHL ===== -->
+        <div class="wf-body" style="{{ d3Time }}">
+          <div class="row" style="justify-content:space-between;margin-bottom:12px"><b style="font-size:19px">Wartungs-Zeitstrahl 2026</b><span class="gcal"><span class="gi"></span>synchron mit Google Kalender</span></div>
+          <div class="tl-axis"><span>Fahrzeug</span><span>Jan</span><span>Feb</span><span>Mär</span><span>Apr</span><span>Mai</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Okt</span><span>Nov</span><span>Dez</span></div>
+          <div class="lane"><div class="lane-name"><span class="vicon" style="width:26px;height:26px;font-size:15px;border-width:1.5px;border-radius:6px">🚗</span>VW Golf</div><div class="lane-track"><div class="today-line" style="left:54.2%"></div><div class="marker" style="left:45%"><span class="pill"><span class="dot red"></span>TÜV</span><span class="dd">06 · offen</span></div><div class="marker" style="left:62.5%"><span class="pill"><span class="dot amber"></span>Öl</span><span class="dd">~08 · offen</span></div><div class="marker" style="left:70.8%"><span class="pill"><span class="dot green"></span>Insp.</span><span class="dd">18.09 · Meyer</span></div></div></div>
+          <div class="lane"><div class="lane-name"><span class="vicon" style="width:26px;height:26px;font-size:15px;border-width:1.5px;border-radius:6px">🚗</span>Škoda Octavia</div><div class="lane-track"><div class="today-line" style="left:54.2%"></div><div class="marker" style="left:20.8%"><span class="pill"><span class="dot grey"></span>Öl</span><span class="dd">03 · erledigt</span></div><div class="marker" style="left:79.2%"><span class="pill"><span class="dot green"></span>TÜV</span><span class="dd">14.10 · Nord</span></div><div class="marker" style="left:87.5%"><span class="pill"><span class="dot amber"></span>Insp.</span><span class="dd">11 · offen</span></div></div></div>
+          <div class="lane"><div class="lane-name"><span class="vicon" style="width:26px;height:26px;font-size:15px;border-width:1.5px;border-radius:6px">🏍️</span>BMW R 1250 GS</div><div class="lane-track"><div class="today-line" style="left:54.2%"></div><div class="marker" style="left:25%"><span class="pill"><span class="dot grey"></span>Insp.</span><span class="dd">04 · erledigt</span></div><div class="marker" style="left:62.5%"><span class="pill"><span class="dot green"></span>TÜV</span><span class="dd">22.08 · Nord</span></div><div class="marker" style="left:70.8%"><span class="pill"><span class="dot amber"></span>Öl</span><span class="dd">~09 · offen</span></div></div></div>
+          <div class="row" style="margin-top:12px"><div class="legend"><span class="row"><span class="dot red"></span>überfällig</span><span class="row"><span class="dot amber"></span>bald fällig</span><span class="row"><span class="dot green"></span>vereinbart</span><span class="row"><span style="width:14px;border-top:2px dashed #d64c4c"></span>heute</span></div></div>
+        </div>
+
+        <!-- ===== BUCHEN (Flow + Erinnerungen) ===== -->
+        <div class="wf-body" style="{{ d3Book }}">
+          <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:10px">
+            <div class="row" style="gap:14px">
+              <span class="step"><span class="stepn on">1</span>Leistung</span>
+              <span class="step"><span class="stepn on">2</span>Werkstatt</span>
+              <span class="step"><span class="stepn">3</span>Termin</span>
+              <span class="step"><span class="stepn">4</span>Bestätigen</span>
+            </div>
+            <span class="badge" style="border-color:#e0a022;color:#a87816">🚗 Golf · Ölwechsel</span>
+          </div>
+          <hr class="line">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div>
+              <div class="mono" style="margin-bottom:8px">WERKSTATT WÄHLEN</div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <label class="vcard" style="padding:11px;display:flex;gap:9px;align-items:center"><input type="radio" name="wk" checked><div><b>Autohaus Meyer</b><div class="mono">2,4 km · ★ 4.6 · ab 89 €</div></div></label>
+                <label class="vcard" style="padding:11px;display:flex;gap:9px;align-items:center"><input type="radio" name="wk"><div><b>ATU Barmbek</b><div class="mono">3,8 km · ★ 4.1 · ab 79 €</div></div></label>
+              </div>
+            </div>
+            <div>
+              <div class="mono" style="margin-bottom:8px">FREIE TERMINE · Autohaus Meyer</div>
+              <div style="font-size:13px;margin-bottom:6px">Mi 10.09.</div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px">
+                <div class="slot off">08:00</div><div class="slot">09:30</div><div class="slot on">11:00</div><div class="slot">13:30</div>
+                <div class="slot">14:00</div><div class="slot off">15:30</div><div class="slot">16:00</div><div class="slot">16:45</div>
+              </div>
+            </div>
+          </div>
+          <hr class="line">
+          <!-- (2) Erinnerungen -->
+          <div class="row" style="flex-wrap:wrap;gap:10px"><span class="mono">ERINNERUNG</span><span style="font-size:14px">Vorlauf</span><button class="chipbtn">4 Wochen vorher ▾</button><span style="font-size:14px">Kanal</span><button class="chipbtn">🔔 Push</button><button class="chipbtn" style="background:#efece5">✉ E-Mail</button><button class="chipbtn">📅 Kalender-Alarm</button></div>
+          <div class="row" style="justify-content:flex-end;gap:10px"><button class="btn">Abbrechen</button><button class="btn pri"><span class="gi" style="display:inline-block;width:13px;height:13px;border-radius:3px;background:conic-gradient(#4285F4 0 25%,#EA4335 0 50%,#FBBC05 0 75%,#34A853 0);vertical-align:-2px;margin-right:6px"></span>Buchen &amp; in Google Kalender</button></div>
+        </div>
+
+        <!-- ===== KOSTEN ===== -->
+        <div class="wf-body" style="{{ d3Cost }}">
+          <div class="row" style="justify-content:space-between"><b style="font-size:19px">Kostenübersicht 2026</b><button class="chipbtn">Jahr 2026 ▾</button></div>
+          <div class="row" style="gap:12px"><div class="kpi"><div class="k">Bezahlt</div><div class="n">562 €</div></div><div class="kpi"><div class="k">Geplant / offen</div><div class="n">418 €</div></div><div class="kpi"><div class="k">Prognose gesamt</div><div class="n">980 €</div></div></div>
+          <div class="vcard">
+            <div class="costrow" style="font-weight:700;border-bottom-width:2px;border-bottom-style:solid"><span></span><span>Leistung</span><span>Betrag</span><span>Status</span></div>
+            <div class="costrow"><span class="dot grey"></span><span>Golf · Ölwechsel (03/26)</span><span>89 €</span><span class="badge" style="border-color:#9a968c;color:#6b6b6b">bezahlt</span></div>
+            <div class="costrow"><span class="dot grey"></span><span>Motorrad · HU (22.08)</span><span>133 €</span><span class="badge" style="border-color:#9a968c;color:#6b6b6b">bezahlt</span></div>
+            <div class="costrow"><span class="dot green"></span><span>Golf · Inspektion (18.09)</span><span>~340 €</span><span class="badge" style="border-color:#3f9d5a;color:#2f7444">geplant</span></div>
+            <div class="costrow" style="border-bottom:none"><span class="dot amber"></span><span>Octavia · Inspektion (11/26)</span><span>~78 €</span><span class="badge" style="border-color:#e0a022;color:#a87816">offen</span></div>
+          </div>
+          <div class="ph" style="height:90px;border-radius:7px">Balkendiagramm · Kosten pro Monat</div>
+        </div>
+
+        <!-- ===== WERKSTÄTTEN ===== -->
+        <div class="wf-body" style="{{ d3Shop }}">
+          <div class="row" style="justify-content:space-between"><b style="font-size:19px">Werkstätten</b><button class="chipbtn">+ Werkstatt</button></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div class="vcard" style="padding:12px"><div class="row" style="justify-content:space-between"><b>Autohaus Meyer</b><span class="mono">★ 4.6</span></div><div class="mono" style="margin-top:3px">Fuhlsbüttler Str. 12, Hamburg · 2,4 km</div><div class="row" style="gap:8px;margin-top:8px"><span class="chipbtn">📞 040 123456</span><span class="chipbtn">🧭 Route</span></div><div style="font-size:12px;color:#6b6b6b;margin-top:6px">zuletzt: Inspektion Golf · 07/2024</div></div>
+              <div class="vcard" style="padding:12px"><div class="row" style="justify-content:space-between"><b>TÜV Nord Station</b><span class="mono">★ 4.3</span></div><div class="mono" style="margin-top:3px">Barmbeker Markt 3, Hamburg · 3,1 km</div><div class="row" style="gap:8px;margin-top:8px"><span class="chipbtn">📞 040 987654</span><span class="chipbtn">🧭 Route</span></div><div style="font-size:12px;color:#6b6b6b;margin-top:6px">2 kommende Termine</div></div>
+            </div>
+            <div class="ph" style="height:250px;border-radius:8px">Karte · Werkstätten in der Nähe</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <p class="dv-next">Nächste Schritte: „<a class="dv-oid" href="#3a">3a</a> als Mobile-Version" · „Buchen-Flow Schritt 3+4 ausbauen" · „Kosten mit echtem Diagramm" · „<a class="dv-oid" href="#3a">3a</a> datengetrieben wie <a class="dv-oid" href="#2a">2a</a> machen"</p>
+</section>
+
+<section class="dv-turn" id="t2">
+  <div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">Verfeinerung von <a class="dv-oid" href="#1a">1a</a> — Dashboard + Kalender, umschaltbar / wischbar</span></div>
+
+  <div class="dv-opts">
+    <div class="dv-opt" id="2a">
+      <div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>Zwei Seiten: „Übersicht" (Dashboard) ⇄ „Kalender" — Tab klicken oder wischen</div>
+      <div class="dv-card" style="width:840px">
+        <div class="wf-top">
+          <div><div class="wf-ttl">Meine Fahrzeuge</div><div class="wf-sub">// {{ vehCount }} Fahrzeuge · nächster Termin in 3 Tagen</div></div>
+          <div class="row" style="gap:12px">
+            <span class="gcal"><span class="gi"></span>Google · verbunden <span class="dot green"></span></span>
+            <div style="display:flex;border:2px solid #1f1f1f;border-radius:8px;overflow:hidden">
+              <button onClick="{{ showDash }}" style="{{ dashTab }}">Übersicht</button>
+              <button onClick="{{ showCal }}" style="{{ calTab }}">Kalender</button>
+              <button onClick="{{ showTime }}" style="{{ timeTab }}">Zeitstrahl</button>
+            </div>
+          </div>
+        </div>
+
+        <div onMouseDown="{{ onDown }}" onMouseUp="{{ onUp }}" onTouchStart="{{ onDown }}" onTouchEnd="{{ onUp }}">
+
+          <!-- ===== PAGE: ÜBERSICHT ===== -->
+          <div class="wf-body" style="{{ dashStyle }}">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div class="mono">// WARNUNGEN</div>
+              <div class="warn" style="border-left-color:#d64c4c"><span class="dot red"></span><b>TÜV überfällig</b> — VW Golf · fällig war 06/2026 <span style="flex:1"></span><button class="btn pri">Termin buchen</button></div>
+              <div class="warn" style="border-left-color:#e0a022"><span class="dot amber"></span><b>Ölwechsel bald</b> — VW Golf · in ~800 km / bis 08/2026 <span style="flex:1"></span><button class="btn">Erinnern</button></div>
+            </div>
+            <div style="{{ gridStyle }}">
+              <sc-for list="{{ vehicles }}" as="v" hint-placeholder-count="2">
+                <div class="vcard">
+                  <div class="row"><div class="vicon">{{ v.icon }}</div><div class="ph" style="width:52px;height:40px;border-radius:5px">Foto</div><div><div style="font-size:19px;font-weight:700">{{ v.name }}</div><div class="mono">{{ v.meta }}</div></div></div>
+                  <hr class="line">
+                  <sc-for list="{{ v.tasks }}" as="t" hint-placeholder-count="3">
+                    <div class="task"><span class="dot {{ t.dotClass }}"></span><span>{{ t.label }}</span><span class="ort">{{ t.ort }}</span><span class="badge" style="{{ t.badgeStyle }}">{{ t.badge }}</span></div>
+                  </sc-for>
+                  <hr class="line">
+                  <div class="row" style="justify-content:space-between"><span class="gcal"><span class="gi"></span>{{ v.calLabel }}</span><button class="btn">Details</button></div>
+                </div>
+              </sc-for>
+            </div>
+            <div class="legend"><span class="row"><span class="dot red"></span>überfällig</span><span class="row"><span class="dot amber"></span>bald fällig</span><span class="row"><span class="dot green"></span>Termin vereinbart</span><span class="row"><span class="dot grey"></span>erledigt</span></div>
+          </div>
+
+          <!-- ===== PAGE: KALENDER ===== -->
+          <div class="wf-body" style="{{ calStyle }}">
+            <div class="row" style="justify-content:space-between">
+              <div class="row"><button class="btn" style="padding:3px 11px">‹</button><b style="font-size:19px;min-width:150px;text-align:center">September 2026</b><button class="btn" style="padding:3px 11px">›</button></div>
+              <div class="row"><span class="stat"><span class="dot green"></span>Google Kalender AN</span><button class="btn">Heute</button></div>
+            </div>
+            <div class="cal">
+              <div class="hd">Mo</div><div class="hd">Di</div><div class="hd">Mi</div><div class="hd">Do</div><div class="hd">Fr</div><div class="hd">Sa</div><div class="hd">So</div>
+              <div class="cell mut">31</div><div class="cell">1</div><div class="cell">2</div><div class="cell">3</div><div class="cell">4</div><div class="cell">5</div><div class="cell">6</div>
+              <div class="cell">7</div><div class="cell">8</div><div class="cell">9</div><div class="cell">10</div><div class="cell">11</div><div class="cell">12</div><div class="cell">13</div>
+              <div class="cell">14</div><div class="cell">15</div><div class="cell">16</div><div class="cell">17</div>
+              <div class="cell">18<div class="evt" style="border-color:#3f9d5a"><span class="dot green"></span>Golf · Inspektion 09:00</div></div>
+              <div class="cell">19</div><div class="cell">20</div>
+              <div class="cell">21</div><div class="cell">22</div><div class="cell">23</div><div class="cell">24</div><div class="cell">25</div><div class="cell">26</div><div class="cell">27</div>
+              <div class="cell">28</div>
+              <div class="cell">29<div class="evt" style="border-color:#e0a022"><span class="dot amber"></span>Golf · Öl fällig</div></div>
+              <div class="cell">30</div><div class="cell mut">1</div><div class="cell mut">2</div><div class="cell mut">3</div><div class="cell mut">4</div>
+            </div>
+            <div class="row" style="justify-content:space-between">
+              <div class="legend"><span class="row"><span class="dot green"></span>vereinbart</span><span class="row"><span class="dot amber"></span>fällig / offen</span><span class="row"><span class="dot red"></span>überfällig</span></div>
+              <span class="gcal"><span class="gi"></span>synchron mit Google Kalender</span>
+            </div>
+            <div class="vcard" style="padding:11px 13px;display:flex;flex-direction:column;gap:6px">
+              <div class="mono">// AUSSERHALB DIESES MONATS</div>
+              <div class="row" style="font-size:14px"><span class="dot green"></span>Di 14.10. · Octavia · TÜV — 11:30 TÜV Nord <span class="badge" style="border-color:#3f9d5a;color:#2f7444;margin-left:auto">vereinbart</span></div>
+              <div class="row" style="font-size:14px"><span class="dot amber"></span>11/2026 · Octavia · Inspektion — Ort offen <span style="margin-left:auto"><button class="btn" style="font-size:13px;padding:2px 9px">Termin buchen</button></span></div>
+            </div>
+          </div>
+
+          <!-- ===== PAGE: ZEITSTRAHL ===== -->
+          <div class="wf-body" style="{{ timeStyle }}">
+            <div class="row" style="justify-content:space-between;margin-bottom:12px">
+              <b style="font-size:19px">Wartungs-Zeitstrahl 2026</b>
+              <span class="gcal"><span class="gi"></span>synchron mit Google Kalender</span>
+            </div>
+            <div class="tl-axis"><span>Fahrzeug</span><span>Jan</span><span>Feb</span><span>Mär</span><span>Apr</span><span>Mai</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Okt</span><span>Nov</span><span>Dez</span></div>
+            <sc-for list="{{ vehicles }}" as="v" hint-placeholder-count="2">
+              <div class="lane">
+                <div class="lane-name"><span class="vicon" style="width:26px;height:26px;font-size:15px;border-width:1.5px;border-radius:6px">{{ v.icon }}</span>{{ v.name }}</div>
+                <div class="lane-track">
+                  <div class="today-line" style="left:54.2%"></div>
+                  <sc-for list="{{ v.markers }}" as="m" hint-placeholder-count="3">
+                    <div class="marker" style="{{ m.pos }}"><span class="pill"><span class="dot {{ m.dotClass }}"></span>{{ m.label }}</span><span class="dd">{{ m.dd }}</span></div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+            <div class="row" style="justify-content:space-between;margin-top:12px">
+              <div class="legend"><span class="row"><span class="dot red"></span>überfällig</span><span class="row"><span class="dot amber"></span>bald fällig</span><span class="row"><span class="dot green"></span>vereinbart</span><span class="row"><span style="width:14px;border-top:2px dashed #d64c4c"></span>heute</span></div>
+              <button class="btn">Marker klicken → Termin buchen / bearbeiten</button>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="row" style="justify-content:center;gap:8px;padding:8px;border-top:2px dashed rgba(0,0,0,.18);font:12px system-ui;color:#7c786e">← wischen oder Tab wechseln →</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="dv-next">Nächste Schritte: „Kalender als Wochenansicht" · „Termin-buchen-Flow als eigene Seite" · „Mobile-Version von <a class="dv-oid" href="#2a">2a</a>" · „Details der Google-Kalender-Verbindung ausbauen"</p>
+</section>
+
+<section class="dv-turn" id="t1">
+  <div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Fahrzeug-Wartung · TÜV / Öl / Inspektion — 4 Richtungen</span></div>
+
+  <div class="dv-opts">
+
+    <!-- ============ 1a  DASHBOARD ============ -->
+    <div class="dv-opt" id="1a">
+      <div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Dashboard — Warnungen zuerst, dann Karten pro Fahrzeug</div>
+      <div class="dv-card" style="width:820px">
+        <div class="wf-top">
+          <div><div class="wf-ttl">Meine Fahrzeuge</div><div class="wf-sub">// 2 Fahrzeuge · nächster Termin in 3 Tagen</div></div>
+          <div class="row">
+            <span class="gcal"><span class="gi"></span>Google Kalender · verbunden <span class="dot green"></span></span>
+            <button class="btn">+ Fahrzeug</button>
+          </div>
+        </div>
+        <div class="wf-body" style="display:flex;flex-direction:column;gap:16px">
+
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div class="mono">// WARNUNGEN</div>
+            <div class="warn" style="border-left-color:#d64c4c"><span class="dot red"></span><b>TÜV überfällig</b> — VW Golf · fällig war 06/2026 <span style="flex:1"></span><button class="btn pri">Termin buchen</button></div>
+            <div class="warn" style="border-left-color:#e0a022"><span class="dot amber"></span><b>Ölwechsel bald</b> — VW Golf · in ~800 km / bis 08/2026 <span style="flex:1"></span><button class="btn">Erinnern</button></div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <!-- vehicle 1 -->
+            <div class="vcard">
+              <div class="row"><div class="ph" style="width:56px;height:40px;border-radius:5px">Foto</div><div><div style="font-size:19px;font-weight:700">VW Golf VII</div><div class="mono">HH-AB 1234 · 84.200 km</div></div></div>
+              <hr class="line">
+              <div class="task"><span class="dot red"></span><span>TÜV / HU</span><span class="ort">überfällig · seit 06/2026</span><span class="badge" style="border-color:#d64c4c;color:#b13636">offen</span></div>
+              <div class="task"><span class="dot amber"></span><span>Ölwechsel</span><span class="ort">fällig ~08/2026</span><span class="badge" style="border-color:#e0a022;color:#a87816">offen</span></div>
+              <div class="task"><span class="dot green"></span><span>Inspektion</span><span class="ort">Fr 18.09. 09:00 · Autohaus Meyer</span><span class="badge" style="border-color:#3f9d5a;color:#2f7444">vereinbart</span></div>
+              <hr class="line">
+              <div class="row" style="justify-content:space-between"><span class="gcal"><span class="gi"></span>3 Termine im Kalender</span><button class="btn">Details</button></div>
+            </div>
+            <!-- vehicle 2 -->
+            <div class="vcard">
+              <div class="row"><div class="ph" style="width:56px;height:40px;border-radius:5px">Foto</div><div><div style="font-size:19px;font-weight:700">Škoda Octavia</div><div class="mono">HH-CD 5678 · 41.900 km</div></div></div>
+              <hr class="line">
+              <div class="task"><span class="dot green"></span><span>TÜV / HU</span><span class="ort">Di 14.10. 11:30 · TÜV Nord</span><span class="badge" style="border-color:#3f9d5a;color:#2f7444">vereinbart</span></div>
+              <div class="task"><span class="dot green"></span><span>Ölwechsel</span><span class="ort">erledigt 03/2026</span><span class="badge" style="border-color:#9a968c;color:#6b6b6b">ok</span></div>
+              <div class="task"><span class="dot amber"></span><span>Inspektion</span><span class="ort">fällig 11/2026</span><span class="badge" style="border-color:#e0a022;color:#a87816">offen</span></div>
+              <hr class="line">
+              <div class="row" style="justify-content:space-between"><span class="gcal"><span class="gi"></span>1 Termin im Kalender</span><button class="btn">Details</button></div>
+            </div>
+          </div>
+
+          <div class="legend"><span class="row"><span class="dot red"></span>überfällig</span><span class="row"><span class="dot amber"></span>bald fällig</span><span class="row"><span class="dot green"></span>Termin vereinbart</span><span class="row"><span class="dot grey"></span>erledigt</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 1b  TIMELINE ============ -->
+    <div class="dv-opt" id="1b">
+      <div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Zeitstrahl — alle Fahrzeuge übers Jahr, „heute"-Linie</div>
+      <div class="dv-card" style="width:900px">
+        <div class="wf-top">
+          <div><div class="wf-ttl">Wartungs-Zeitstrahl 2026</div><div class="wf-sub">// Markierung = Fälligkeit oder Termin</div></div>
+          <span class="gcal"><span class="gi"></span>mit Google Kalender synchronisiert</span>
+        </div>
+        <div class="wf-body">
+          <div class="tl-axis"><span>Fahrzeug</span><span>Jan</span><span>Feb</span><span>Mär</span><span>Apr</span><span>Mai</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Okt</span><span>Nov</span><span>Dez</span></div>
+
+          <div class="lane">
+            <div class="lane-name"><div class="ph" style="width:26px;height:20px;border-radius:3px"></div>VW Golf</div>
+            <div class="lane-track">
+              <div class="today-line" style="left:54.2%"></div>
+              <div class="marker" style="left:45%"><span class="pill"><span class="dot red"></span>TÜV</span><span class="dd">fällig 06 · offen</span></div>
+              <div class="marker" style="left:62.5%"><span class="pill"><span class="dot amber"></span>Öl</span><span class="dd">~08 · offen</span></div>
+              <div class="marker" style="left:70.8%"><span class="pill"><span class="dot green"></span>Insp.</span><span class="dd">18.09 · Meyer</span></div>
+            </div>
+          </div>
+
+          <div class="lane">
+            <div class="lane-name"><div class="ph" style="width:26px;height:20px;border-radius:3px"></div>Škoda Octavia</div>
+            <div class="lane-track">
+              <div class="today-line" style="left:54.2%"></div>
+              <div class="marker" style="left:20.8%"><span class="pill"><span class="dot grey"></span>Öl</span><span class="dd">03 · erledigt</span></div>
+              <div class="marker" style="left:79.2%"><span class="pill"><span class="dot green"></span>TÜV</span><span class="dd">14.10 · TÜV Nord</span></div>
+              <div class="marker" style="left:87.5%"><span class="pill"><span class="dot amber"></span>Insp.</span><span class="dd">11 · offen</span></div>
+            </div>
+          </div>
+
+          <hr class="line" style="margin:14px 0 12px">
+          <div class="row" style="justify-content:space-between">
+            <div class="legend"><span class="row"><span class="dot red"></span>überfällig</span><span class="row"><span class="dot amber"></span>bald fällig</span><span class="row"><span class="dot green"></span>vereinbart</span><span class="row"><span style="width:14px;border-top:2px dashed #d64c4c"></span>heute</span></div>
+            <button class="btn">Marker klicken → Termin buchen / bearbeiten</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 1c  KALENDER ============ -->
+    <div class="dv-opt" id="1c">
+      <div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Kalender-Ansicht mit eingebettetem Google Kalender + Seitenliste</div>
+      <div class="dv-card" style="width:880px">
+        <div class="wf-top">
+          <div class="row"><button class="btn">‹</button><div class="wf-ttl" style="min-width:150px;text-align:center">September 2026</div><button class="btn">›</button></div>
+          <div class="row"><span class="stat"><span class="dot green"></span>Google Kalender AN</span><button class="btn">Heute</button></div>
+        </div>
+        <div class="wf-body" style="display:grid;grid-template-columns:1fr 240px;gap:16px;align-items:start">
+          <div>
+            <div class="cal">
+              <div class="hd">Mo</div><div class="hd">Di</div><div class="hd">Mi</div><div class="hd">Do</div><div class="hd">Fr</div><div class="hd">Sa</div><div class="hd">So</div>
+              <div class="cell mut">31</div><div class="cell">1</div><div class="cell">2</div><div class="cell">3</div><div class="cell">4</div><div class="cell">5</div><div class="cell">6</div>
+              <div class="cell">7</div><div class="cell">8</div><div class="cell">9</div><div class="cell">10</div><div class="cell">11</div><div class="cell">12</div><div class="cell">13</div>
+              <div class="cell">14</div><div class="cell">15</div><div class="cell">16</div><div class="cell">17</div>
+              <div class="cell">18<div class="evt" style="border-color:#3f9d5a"><span class="dot green"></span>Golf · Inspektion 09:00</div></div>
+              <div class="cell">19</div><div class="cell">20</div>
+              <div class="cell">21</div><div class="cell">22</div><div class="cell">23</div><div class="cell">24</div><div class="cell">25</div><div class="cell">26</div><div class="cell">27</div>
+              <div class="cell">28</div>
+              <div class="cell">29<div class="evt" style="border-color:#e0a022"><span class="dot amber"></span>Öl fällig</div></div>
+              <div class="cell">30</div><div class="cell mut">1</div><div class="cell mut">2</div><div class="cell mut">3</div><div class="cell mut">4</div>
+            </div>
+            <div class="row" style="justify-content:space-between;margin-top:12px">
+              <span class="gcal"><span class="gi"></span>Termine erscheinen auch in Google Kalender</span>
+              <button class="btn pri">+ Termin anlegen</button>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="mono">// ANSTEHEND</div>
+            <div class="vcard" style="padding:11px"><div class="row"><span class="dot green"></span><b>Fr 18.09.</b></div><div style="font-size:15px;margin-top:2px">Golf · Inspektion</div><div class="ort" style="font:11px system-ui;color:#6b6b6b">09:00 · Autohaus Meyer</div><span class="badge" style="border-color:#3f9d5a;color:#2f7444;margin-top:6px;display:inline-block">vereinbart</span></div>
+            <div class="vcard" style="padding:11px"><div class="row"><span class="dot amber"></span><b>~29.09.</b></div><div style="font-size:15px;margin-top:2px">Golf · Ölwechsel</div><div class="ort" style="font:11px system-ui;color:#6b6b6b">Ort offen</div><button class="btn" style="margin-top:6px;font-size:13px;padding:3px 9px">Termin buchen</button></div>
+            <div class="vcard" style="padding:11px"><div class="row"><span class="dot green"></span><b>Di 14.10.</b></div><div style="font-size:15px;margin-top:2px">Octavia · TÜV</div><div class="ort" style="font:11px system-ui;color:#6b6b6b">11:30 · TÜV Nord</div><span class="badge" style="border-color:#3f9d5a;color:#2f7444;margin-top:6px;display:inline-block">vereinbart</span></div>
+            <hr class="line">
+            <label class="row" style="font:12px system-ui;color:#4a4a4a"><input type="checkbox" checked>Google Kalender einblenden</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 1d  MOBILE ============ -->
+    <div class="dv-opt" id="1d">
+      <div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Mobil — Liste + aufgeklappte Termin-Detailkarte</div>
+      <div class="row" style="gap:18px;align-items:flex-start">
+        <!-- screen 1: list -->
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="pbody" style="display:flex;flex-direction:column;gap:12px">
+            <div class="row" style="justify-content:space-between"><div style="font-size:20px;font-weight:700">Fahrzeuge</div><span class="gcal" style="padding:3px 7px;font-size:11px"><span class="gi"></span>synced</span></div>
+            <div class="warn" style="border-left-color:#d64c4c;padding:7px 10px;font-size:13px"><span class="dot red"></span>TÜV überfällig · Golf</div>
+            <div class="vcard" style="padding:11px">
+              <div class="row" style="justify-content:space-between"><b style="font-size:16px">VW Golf VII</b><span class="mono">84.200 km</span></div>
+              <hr class="line" style="margin:8px 0">
+              <div class="row" style="gap:7px;font-size:14px"><span class="dot red"></span>TÜV <span class="mono" style="margin-left:auto">offen</span></div>
+              <div class="row" style="gap:7px;font-size:14px;margin-top:5px"><span class="dot amber"></span>Öl <span class="mono" style="margin-left:auto">~08/26</span></div>
+              <div class="row" style="gap:7px;font-size:14px;margin-top:5px"><span class="dot green"></span>Inspektion <span class="mono" style="margin-left:auto">18.09.</span></div>
+            </div>
+            <div class="vcard" style="padding:11px">
+              <div class="row" style="justify-content:space-between"><b style="font-size:16px">Škoda Octavia</b><span class="mono">41.900 km</span></div>
+              <hr class="line" style="margin:8px 0">
+              <div class="row" style="gap:7px;font-size:14px"><span class="dot green"></span>TÜV <span class="mono" style="margin-left:auto">14.10.</span></div>
+              <div class="row" style="gap:7px;font-size:14px;margin-top:5px"><span class="dot amber"></span>Inspektion <span class="mono" style="margin-left:auto">11/26</span></div>
+            </div>
+          </div>
+        </div>
+        <!-- screen 2: detail -->
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="pbody" style="display:flex;flex-direction:column;gap:12px">
+            <div class="row" style="gap:8px"><button class="btn" style="padding:2px 9px">‹</button><b style="font-size:17px">Inspektion · Golf</b></div>
+            <div class="ph" style="height:70px;border-radius:6px">Foto Fahrzeug</div>
+            <div class="vcard" style="padding:12px;display:flex;flex-direction:column;gap:8px">
+              <div class="row"><span class="dot green"></span><span class="badge" style="border-color:#3f9d5a;color:#2f7444">Termin vereinbart</span></div>
+              <div style="font-size:15px"><b>Fr 18. September</b> · 09:00 Uhr</div>
+              <div class="ort" style="font:12px system-ui;color:#6b6b6b">📍 Autohaus Meyer, Hamburg</div>
+              <hr class="line" style="margin:3px 0">
+              <div class="mono">// nächste Fälligkeit</div>
+              <div style="font-size:14px">Ölwechsel — bis ~08/2026</div>
+            </div>
+            <button class="btn pri" style="text-align:center;justify-content:center">+ Zu Google Kalender hinzufügen</button>
+            <button class="btn" style="text-align:center">Termin ändern / stornieren</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="dv-next">Nächste Schritte: „<a class="dv-oid" href="#1a">1a</a> und <a class="dv-oid" href="#1c">1c</a> kombinieren" · „<a class="dv-oid" href="#1b">1b</a> als Monats- statt Jahresansicht" · „mehr Detail bei der Google-Kalender-Verbindung" · „neue Richtungen zeigen"</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;vehicleCount&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:2,&quot;tsType&quot;:&quot;number&quot;,&quot;min&quot;:1,&quot;max&quot;:4,&quot;step&quot;:1,&quot;unit&quot;:&quot; Fahrzeuge&quot;,&quot;section&quot;:&quot;Allgemein&quot;},&quot;v1Type&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Auto&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;Auto&quot;,&quot;Motorrad&quot;,&quot;Fahrrad&quot;],&quot;section&quot;:&quot;Fahrzeug 1&quot;},&quot;v2Type&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Auto&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;Auto&quot;,&quot;Motorrad&quot;,&quot;Fahrrad&quot;],&quot;section&quot;:&quot;Fahrzeug 2&quot;},&quot;v3Type&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Motorrad&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;Auto&quot;,&quot;Motorrad&quot;,&quot;Fahrrad&quot;],&quot;section&quot;:&quot;Fahrzeug 3&quot;},&quot;v4Type&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Fahrrad&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;Auto&quot;,&quot;Motorrad&quot;,&quot;Fahrrad&quot;],&quot;section&quot;:&quot;Fahrzeug 4&quot;}}">
+class Component extends DCLogic {
+  state = { page: 'dash', startX: null, page3: 'dash' };
+  tab(active) {
+    return {
+      padding: '6px 18px', border: 'none', cursor: 'pointer',
+      fontFamily: "'Kalam', cursive", fontSize: '15px', lineHeight: 1,
+      background: active ? '#1f1f1f' : '#fff',
+      color: active ? '#fff' : '#1f1f1f'
+    };
+  }
+  tab3(active) { return { background: active ? '#1f1f1f' : 'transparent', color: active ? '#fff' : '#1f1f1f' }; }
+  onDown = (e) => { this.setState({ startX: (e.touches ? e.touches[0].clientX : e.clientX) }); };
+  pages = ['dash', 'cal', 'time'];
+  ALL_VEHICLES = [
+    {
+      type: 'Auto', name: 'VW Golf VII', meta: 'HH-AB 1234 · 84.200 km', calLabel: '3 Termine im Kalender',
+      tasks: [
+        { dotClass: 'red',   label: 'TÜV / HU',   ort: 'überfällig · seit 06/2026',        badge: 'offen',      badgeStyle: { borderColor: '#d64c4c', color: '#b13636' } },
+        { dotClass: 'amber', label: 'Ölwechsel',  ort: 'fällig ~08/2026',                  badge: 'offen',      badgeStyle: { borderColor: '#e0a022', color: '#a87816' } },
+        { dotClass: 'green', label: 'Inspektion', ort: 'Fr 18.09. 09:00 · Autohaus Meyer', badge: 'vereinbart', badgeStyle: { borderColor: '#3f9d5a', color: '#2f7444' } }
+      ],
+      markers: [
+        { pos: { left: '45%' },   dotClass: 'red',   label: 'TÜV',   dd: 'fällig 06 · offen' },
+        { pos: { left: '62.5%' }, dotClass: 'amber', label: 'Öl',    dd: '~08 · offen' },
+        { pos: { left: '70.8%' }, dotClass: 'green', label: 'Insp.', dd: '18.09 · Meyer' }
+      ]
+    },
+    {
+      type: 'Auto', name: 'Škoda Octavia', meta: 'HH-CD 5678 · 41.900 km', calLabel: '1 Termin im Kalender',
+      tasks: [
+        { dotClass: 'green', label: 'TÜV / HU',   ort: 'Di 14.10. 11:30 · TÜV Nord', badge: 'vereinbart', badgeStyle: { borderColor: '#3f9d5a', color: '#2f7444' } },
+        { dotClass: 'grey',  label: 'Ölwechsel',  ort: 'erledigt 03/2026',           badge: 'ok',         badgeStyle: { borderColor: '#9a968c', color: '#6b6b6b' } },
+        { dotClass: 'amber', label: 'Inspektion', ort: 'fällig 11/2026',             badge: 'offen',      badgeStyle: { borderColor: '#e0a022', color: '#a87816' } }
+      ],
+      markers: [
+        { pos: { left: '20.8%' }, dotClass: 'grey',  label: 'Öl',    dd: '03 · erledigt' },
+        { pos: { left: '79.2%' }, dotClass: 'green', label: 'TÜV',   dd: '14.10 · TÜV Nord' },
+        { pos: { left: '87.5%' }, dotClass: 'amber', label: 'Insp.', dd: '11 · offen' }
+      ]
+    },
+    {
+      type: 'Auto', name: 'VW T-Roc', meta: 'HH-EF 9012 · 22.500 km', calLabel: '1 Termin im Kalender',
+      tasks: [
+        { dotClass: 'green', label: 'TÜV / HU',   ort: 'Do 05.11. 09:30 · GTÜ Prüfstelle', badge: 'vereinbart', badgeStyle: { borderColor: '#3f9d5a', color: '#2f7444' } },
+        { dotClass: 'amber', label: 'Ölwechsel',  ort: 'fällig ~10/2026',                  badge: 'offen',      badgeStyle: { borderColor: '#e0a022', color: '#a87816' } },
+        { dotClass: 'grey',  label: 'Inspektion', ort: 'erledigt 02/2026',                 badge: 'ok',         badgeStyle: { borderColor: '#9a968c', color: '#6b6b6b' } }
+      ],
+      markers: [
+        { pos: { left: '12.5%' }, dotClass: 'grey',  label: 'Insp.', dd: '02 · erledigt' },
+        { pos: { left: '79.2%' }, dotClass: 'amber', label: 'Öl',    dd: '~10 · offen' },
+        { pos: { left: '91.6%' }, dotClass: 'green', label: 'TÜV',   dd: '05.11 · GTÜ' }
+      ]
+    },
+    {
+      type: 'Auto', name: 'Opel Corsa', meta: 'HH-GH 3456 · 108.900 km', calLabel: '0 Termine – buchen',
+      tasks: [
+        { dotClass: 'amber', label: 'TÜV / HU',   ort: 'fällig 12/2026',        badge: 'offen',    badgeStyle: { borderColor: '#e0a022', color: '#a87816' } },
+        { dotClass: 'red',   label: 'Ölwechsel',  ort: 'überfällig · seit 05/2026', badge: 'offen', badgeStyle: { borderColor: '#d64c4c', color: '#b13636' } },
+        { dotClass: 'amber', label: 'Inspektion', ort: 'fällig 09/2026',        badge: 'offen',    badgeStyle: { borderColor: '#e0a022', color: '#a87816' } }
+      ],
+      markers: [
+        { pos: { left: '37.5%' }, dotClass: 'red',   label: 'Öl',    dd: '05 · überfällig' },
+        { pos: { left: '70.8%' }, dotClass: 'amber', label: 'Insp.', dd: '09 · offen' },
+        { pos: { left: '95.8%' }, dotClass: 'amber', label: 'TÜV',   dd: '12 · offen' }
+      ]
+    },
+    {
+      type: 'Motorrad', name: 'BMW R 1250 GS', meta: 'HH-MR 088 · 31.400 km', calLabel: '1 Termin im Kalender',
+      tasks: [
+        { dotClass: 'green', label: 'TÜV / HU',   ort: 'Sa 22.08. 10:00 · TÜV Nord', badge: 'vereinbart', badgeStyle: { borderColor: '#3f9d5a', color: '#2f7444' } },
+        { dotClass: 'amber', label: 'Ölwechsel',  ort: 'fällig ~09/2026',            badge: 'offen',      badgeStyle: { borderColor: '#e0a022', color: '#a87816' } },
+        { dotClass: 'grey',  label: 'Inspektion', ort: 'erledigt 04/2026',           badge: 'ok',         badgeStyle: { borderColor: '#9a968c', color: '#6b6b6b' } }
+      ],
+      markers: [
+        { pos: { left: '25%' },   dotClass: 'grey',  label: 'Insp.', dd: '04 · erledigt' },
+        { pos: { left: '62.5%' }, dotClass: 'green', label: 'TÜV',   dd: '22.08 · TÜV' },
+        { pos: { left: '70.8%' }, dotClass: 'amber', label: 'Öl',    dd: '~09 · offen' }
+      ]
+    },
+    {
+      type: 'Motorrad', name: 'Vespa GTS 300', meta: 'HH-MR 152 · 12.900 km', calLabel: '0 Termine – buchen',
+      tasks: [
+        { dotClass: 'amber', label: 'TÜV / HU',   ort: 'fällig 10/2026',            badge: 'offen', badgeStyle: { borderColor: '#e0a022', color: '#a87816' } },
+        { dotClass: 'red',   label: 'Ölwechsel',  ort: 'überfällig · seit 06/2026', badge: 'offen', badgeStyle: { borderColor: '#d64c4c', color: '#b13636' } },
+        { dotClass: 'amber', label: 'Inspektion', ort: 'fällig 10/2026',            badge: 'offen', badgeStyle: { borderColor: '#e0a022', color: '#a87816' } }
+      ],
+      markers: [
+        { pos: { left: '45.8%' }, dotClass: 'red',   label: 'Öl',    dd: '06 · überfällig' },
+        { pos: { left: '79.2%' }, dotClass: 'amber', label: 'TÜV',   dd: '10 · offen' },
+        { pos: { left: '87.5%' }, dotClass: 'amber', label: 'Insp.', dd: '10 · offen' }
+      ]
+    },
+    {
+      type: 'Fahrrad', name: 'Cube Reaction E-Bike', meta: 'E-Bike · 4.200 km', calLabel: '1 Termin im Kalender',
+      tasks: [
+        { dotClass: 'green', label: 'Inspektion',   ort: 'Mi 10.09. 14:00 · Radhaus', badge: 'vereinbart', badgeStyle: { borderColor: '#3f9d5a', color: '#2f7444' } },
+        { dotClass: 'amber', label: 'Bremsen',      ort: 'prüfen ~09/2026',           badge: 'offen',      badgeStyle: { borderColor: '#e0a022', color: '#a87816' } },
+        { dotClass: 'grey',  label: 'Akku-Service', ort: 'erledigt 03/2026',          badge: 'ok',         badgeStyle: { borderColor: '#9a968c', color: '#6b6b6b' } }
+      ],
+      markers: [
+        { pos: { left: '20.8%' }, dotClass: 'grey',  label: 'Akku',  dd: '03 · erledigt' },
+        { pos: { left: '62.5%' }, dotClass: 'amber', label: 'Brems', dd: '~09 · offen' },
+        { pos: { left: '70.8%' }, dotClass: 'green', label: 'Insp.', dd: '10.09 · Radhaus' }
+      ]
+    },
+    {
+      type: 'Fahrrad', name: 'Canyon Grail', meta: 'Gravel · 2.100 km', calLabel: '0 Termine – buchen',
+      tasks: [
+        { dotClass: 'amber', label: 'Inspektion', ort: 'fällig 08/2026',        badge: 'offen',      badgeStyle: { borderColor: '#e0a022', color: '#a87816' } },
+        { dotClass: 'green', label: 'Bremsen',    ort: 'Fr 15.08. · Radhaus',   badge: 'vereinbart', badgeStyle: { borderColor: '#3f9d5a', color: '#2f7444' } },
+        { dotClass: 'amber', label: 'Kette/Öl',   ort: 'fällig ~09/2026',       badge: 'offen',      badgeStyle: { borderColor: '#e0a022', color: '#a87816' } }
+      ],
+      markers: [
+        { pos: { left: '58.3%' }, dotClass: 'amber', label: 'Insp.', dd: '08 · offen' },
+        { pos: { left: '62.5%' }, dotClass: 'green', label: 'Brems', dd: '15.08 · Radhaus' },
+        { pos: { left: '70.8%' }, dotClass: 'amber', label: 'Öl',    dd: '~09 · offen' }
+      ]
+    }
+  ];
+  onUp = (e) => {
+    if (this.state.startX == null) return;
+    const x = (e.changedTouches ? e.changedTouches[0].clientX : e.clientX);
+    const dx = x - this.state.startX;
+    const i = this.pages.indexOf(this.state.page);
+    if (dx < -60) this.setState({ page: this.pages[Math.min(i + 1, this.pages.length - 1)], startX: null });
+    else if (dx > 60) this.setState({ page: this.pages[Math.max(i - 1, 0)], startX: null });
+    else this.setState({ startX: null });
+  };
+  renderVals() {
+    const page = this.state.page;
+    const count = Math.max(1, Math.min(4, this.props.vehicleCount ?? 3));
+    const slotTypes = [
+      this.props.v1Type ?? 'Auto',
+      this.props.v2Type ?? 'Auto',
+      this.props.v3Type ?? 'Motorrad',
+      this.props.v4Type ?? 'Fahrrad'
+    ];
+    const icons = { Auto: '🚗', Motorrad: '🏍️', Fahrrad: '🚲' };
+    const pools = { Auto: [], Motorrad: [], Fahrrad: [] };
+    this.ALL_VEHICLES.forEach(v => { (pools[v.type] || (pools[v.type] = [])).push(v); });
+    const used = { Auto: 0, Motorrad: 0, Fahrrad: 0 };
+    const vehicles = [];
+    for (let i = 0; i < count; i++) {
+      const t = slotTypes[i] || 'Auto';
+      const pool = pools[t] || [];
+      if (!pool.length) continue;
+      const base = pool[used[t] % pool.length];
+      used[t] = (used[t] || 0) + 1;
+      vehicles.push(Object.assign({}, base, { icon: icons[t] }));
+    }
+    const p3 = this.state.page3 || 'dash';
+    const mk3 = (n) => () => this.setState({ page3: n });
+    const flex3 = (a, g) => ({ display: a ? 'flex' : 'none', flexDirection: 'column', gap: g });
+    return {
+      vehicles,
+      vehCount: vehicles.length,
+      gridStyle: { display: 'grid', gridTemplateColumns: count === 1 ? '1fr' : '1fr 1fr', gap: '16px' },
+      showDash: () => this.setState({ page: 'dash' }),
+      showCal: () => this.setState({ page: 'cal' }),
+      showTime: () => this.setState({ page: 'time' }),
+      dashTab: this.tab(page === 'dash'),
+      calTab: this.tab(page === 'cal'),
+      timeTab: this.tab(page === 'time'),
+      dashStyle: { display: page === 'dash' ? 'flex' : 'none', flexDirection: 'column', gap: '16px' },
+      calStyle: { display: page === 'cal' ? 'flex' : 'none', flexDirection: 'column', gap: '14px' },
+      timeStyle: { display: page === 'time' ? 'block' : 'none' },
+      onDown: this.onDown,
+      onUp: this.onUp,
+      p3,
+      s3Dash: mk3('dash'), s3Cal: mk3('cal'), s3Time: mk3('time'), s3Book: mk3('book'), s3Cost: mk3('cost'), s3Shop: mk3('shop'),
+      t3Dash: this.tab3(p3 === 'dash'), t3Cal: this.tab3(p3 === 'cal'), t3Time: this.tab3(p3 === 'time'), t3Book: this.tab3(p3 === 'book'), t3Cost: this.tab3(p3 === 'cost'), t3Shop: this.tab3(p3 === 'shop'),
+      d3Dash: flex3(p3 === 'dash', '16px'), d3Cal: flex3(p3 === 'cal', '14px'), d3Time: { display: p3 === 'time' ? 'block' : 'none' }, d3Book: flex3(p3 === 'book', '16px'), d3Cost: flex3(p3 === 'cost', '14px'), d3Shop: flex3(p3 === 'shop', '14px')
+    };
+  }
+}
+</script>
+</body>
+</html>
