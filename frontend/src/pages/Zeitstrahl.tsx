@@ -72,7 +72,7 @@ export function Zeitstrahl() {
           <span className="row"><span className="dot red" />überfällig</span>
           <span className="row"><span className="dot amber" />bald fällig</span>
           <span className="row"><span className="dot green" />vereinbart</span>
-          <span className="row"><span style={{ width: 14, borderTop: '2px dashed #d64c4c' }} />heute</span>
+          <span className="row"><span style={{ width: 14, borderTop: '2px dashed var(--red)' }} />heute</span>
         </div>
         <span className="mono">Marker klicken → Termin buchen / bearbeiten</span>
       </div>

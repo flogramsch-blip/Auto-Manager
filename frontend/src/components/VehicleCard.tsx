@@ -130,15 +130,15 @@ export function VehicleCard({
 
           <div className="row wrap" style={{ gap: 9 }}>
             <span className="mono">KM-STAND</span>
-            <div style={{ display: 'flex', alignItems: 'center', border: '2px solid #1f1f1f', borderRadius: 7, overflow: 'hidden', background: '#fff' }}>
+            <div style={{ display: 'flex', alignItems: 'center', border: '2px solid var(--ink)', borderRadius: 7, overflow: 'hidden', background: 'var(--card)' }}>
               <input
                 type="text"
                 placeholder={vehicle.odometer_km ? String(vehicle.odometer_km + 500) : '85000'}
                 value={kmDraft}
                 onChange={(e) => setKmDraft(e.target.value)}
-                style={{ width: 92, border: 'none', padding: '6px 10px', font: '600 15px ui-monospace,Menlo,monospace', background: 'transparent', outline: 'none' }}
+                style={{ width: 92, border: 'none', padding: '6px 10px', font: '600 15px ui-monospace,Menlo,monospace', background: 'transparent', color: 'var(--ink)', outline: 'none' }}
               />
-              <span style={{ padding: '6px 10px', borderLeft: '1.5px dashed rgba(0,0,0,.22)', font: '12px ui-monospace,Menlo,monospace', color: '#6b6b6b' }}>km</span>
+              <span style={{ padding: '6px 10px', borderLeft: '1.5px dashed var(--line)', font: '12px ui-monospace,Menlo,monospace', color: 'var(--muted)' }}>km</span>
             </div>
             <button className="btn pri" onClick={submitKm}>Speichern</button>
             <span className="chipbtn" onClick={() => bumpKm(500)}>+ 500</span>
@@ -160,7 +160,7 @@ export function VehicleCard({
                 ))}
               </div>
               {projection && (
-                <div className="mono" style={{ marginTop: 7, color: '#4a4a4a' }}>
+                <div className="mono" style={{ marginTop: 7, color: 'var(--muted)' }}>
                   → {dueKmItem!.label} {projection}
                 </div>
               )}
@@ -191,7 +191,7 @@ export function VehicleCard({
             </div>
           </div>
           {nextReminderAt && (
-            <div className="warn" style={{ borderLeftColor: '#e0a022', fontSize: 14, marginTop: 4 }}>
+            <div className="warn" style={{ borderLeftColor: 'var(--amber)', fontSize: 14, marginTop: 4 }}>
               <span style={{ fontSize: 15 }}>⏰</span>
               <b>Nächste Erinnerung:</b> {nextReminderAt.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' })}
             </div>
@@ -208,7 +208,7 @@ export function VehicleCard({
                     📄 {doc.original_name}
                   </a>
                 ))}
-                <div className="doc" style={{ borderStyle: 'dashed', color: '#7c786e', cursor: 'pointer' }} onClick={() => fileInput.current?.click()}>
+                <div className="doc" style={{ borderStyle: 'dashed', color: 'var(--muted)', cursor: 'pointer' }} onClick={() => fileInput.current?.click()}>
                   {uploading ? 'lädt hoch…' : '+ Dokument ablegen'}
                 </div>
                 <input

@@ -26,7 +26,7 @@ export function EditableText({
           if (e.key === 'Enter') { setEditing(false); onSave(draft); }
           if (e.key === 'Escape') { setDraft(value ?? ''); setEditing(false); }
         }}
-        style={{ font: '12px system-ui,sans-serif', padding: '3px 6px', border: '1.5px solid #1f1f1f', borderRadius: 20 }}
+        style={{ font: '12px system-ui,sans-serif', padding: '3px 6px', border: '1.5px solid var(--ink)', borderRadius: 20 }}
       />
     );
   }

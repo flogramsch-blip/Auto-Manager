@@ -42,9 +42,9 @@ export function Kalender() {
         <div className="row">
           <span className="stat"><span className={`dot ${status.connected ? 'green' : 'grey'}`} />Google {status.connected ? 'AN' : 'AUS'}</span>
           <button className="btn" onClick={() => setCursor(new Date())}>Heute</button>
-          <div style={{ display: 'flex', border: '2px solid #1f1f1f', borderRadius: 7, overflow: 'hidden' }}>
-            <span onClick={() => setView('month')} style={{ padding: '5px 12px', background: view === 'month' ? '#1f1f1f' : '#fff', color: view === 'month' ? '#fff' : '#1f1f1f', fontSize: 14, cursor: 'pointer' }}>Monat</span>
-            <span onClick={() => setView('week')} style={{ padding: '5px 12px', background: view === 'week' ? '#1f1f1f' : '#fff', color: view === 'week' ? '#fff' : '#1f1f1f', fontSize: 14, cursor: 'pointer' }}>Woche</span>
+          <div style={{ display: 'flex', border: '2px solid var(--ink)', borderRadius: 7, overflow: 'hidden' }}>
+            <span onClick={() => setView('month')} style={{ padding: '5px 12px', background: view === 'month' ? 'var(--accent)' : 'var(--card)', color: view === 'month' ? 'var(--on-accent)' : 'var(--ink)', fontSize: 14, cursor: 'pointer' }}>Monat</span>
+            <span onClick={() => setView('week')} style={{ padding: '5px 12px', background: view === 'week' ? 'var(--accent)' : 'var(--card)', color: view === 'week' ? 'var(--on-accent)' : 'var(--ink)', fontSize: 14, cursor: 'pointer' }}>Woche</span>
           </div>
         </div>
       </div>
@@ -112,5 +112,5 @@ export function Kalender() {
 }
 
 function colorFor(dot: string): string {
-  return { red: '#d64c4c', amber: '#e0a022', green: '#3f9d5a', grey: '#9a968c' }[dot] || '#1f1f1f';
+  return { red: 'var(--red)', amber: 'var(--amber)', green: 'var(--green)', grey: 'var(--grey)' }[dot] || 'var(--ink)';
 }

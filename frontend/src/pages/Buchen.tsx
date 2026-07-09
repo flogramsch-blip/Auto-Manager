@@ -145,7 +145,7 @@ export function Buchen() {
         <div>
           <div className="mono" style={{ marginBottom: 8 }}>FREIE TERMINE · {workshop?.name}</div>
           <input type="date" value={date} onChange={(e) => setDate(e.target.value)}
-            style={{ padding: '6px 10px', border: '1.5px solid #1f1f1f', borderRadius: 6, marginBottom: 10 }} />
+            style={{ padding: '6px 10px', border: '1.5px solid var(--ink)', borderRadius: 6, marginBottom: 10 }} />
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 7 }}>
             {SLOT_TIMES.map((t, i) => (
               <div key={t} className={`slot${time === t ? ' on' : ''}${i % 5 === 0 ? ' off' : ''}`}
@@ -169,7 +169,7 @@ export function Buchen() {
           <div className="row wrap" style={{ gap: 10 }}>
             <span className="mono">ERINNERUNG</span>
             <span>Vorlauf</span>
-            <select value={lead} onChange={(e) => setLead(e.target.value)} style={{ padding: '5px 8px', border: '1.5px solid #1f1f1f', borderRadius: 6 }}>
+            <select value={lead} onChange={(e) => setLead(e.target.value)} style={{ padding: '5px 8px', border: '1.5px solid var(--ink)', borderRadius: 6, background: 'var(--card)', color: 'var(--ink)' }}>
               {LEAD_OPTIONS.map((l) => <option key={l}>{l}</option>)}
             </select>
             <span>Kanal</span>

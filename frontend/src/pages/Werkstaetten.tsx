@@ -25,11 +25,11 @@ export function Werkstaetten() {
       {showForm && (
         <div className="vcard row wrap" style={{ gap: 10 }}>
           <input placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
-            style={{ padding: '6px 10px', border: '1.5px solid #1f1f1f', borderRadius: 6, flex: '1 1 160px' }} />
+            style={{ padding: '6px 10px', border: '1.5px solid var(--ink)', borderRadius: 6, flex: '1 1 160px' }} />
           <input placeholder="Adresse" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })}
-            style={{ padding: '6px 10px', border: '1.5px solid #1f1f1f', borderRadius: 6, flex: '1 1 200px' }} />
+            style={{ padding: '6px 10px', border: '1.5px solid var(--ink)', borderRadius: 6, flex: '1 1 200px' }} />
           <input placeholder="Telefon" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })}
-            style={{ padding: '6px 10px', border: '1.5px solid #1f1f1f', borderRadius: 6, flex: '1 1 140px' }} />
+            style={{ padding: '6px 10px', border: '1.5px solid var(--ink)', borderRadius: 6, flex: '1 1 140px' }} />
           <button className="btn pri" onClick={create}>Anlegen</button>
         </div>
       )}

@@ -8,6 +8,8 @@
   --amber: #e0a022;
   --green: #3f9d5a;
   --grey: #cfccc4;
+  --accent: var(--ink);
+  --on-accent: var(--card);
 }
 
 * { box-sizing: border-box; }
@@ -141,8 +143,10 @@ a:hover { color: #1b52ad; }
 .grid2 { display:grid;grid-template-columns:1fr 1fr;gap:16px; }
 @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } }
 
-input[type=text], input[type=number] {
+input:not([type=radio]):not([type=checkbox]), select {
   font-family: 'Kalam', cursive;
+  background: var(--card);
+  color: var(--ink);
 }
 
 .trend-bars { display:grid;grid-template-columns:repeat(6,1fr);gap:9px;align-items:end;height:74px; }

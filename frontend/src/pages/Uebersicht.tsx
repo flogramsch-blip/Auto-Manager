@@ -69,17 +69,17 @@ export function Uebersicht() {
       {showNewVehicle && (
         <div className="vcard row wrap" style={{ gap: 10 }}>
           <input placeholder="Name (z.B. VW Golf VII)" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
-            style={{ padding: '6px 10px', border: '1.5px solid #1f1f1f', borderRadius: 6, flex: '1 1 180px' }} />
+            style={{ padding: '6px 10px', border: '1.5px solid var(--ink)', borderRadius: 6, flex: '1 1 180px' }} />
           <input placeholder="Kennzeichen" value={form.plate} onChange={(e) => setForm({ ...form, plate: e.target.value })}
-            style={{ padding: '6px 10px', border: '1.5px solid #1f1f1f', borderRadius: 6, flex: '1 1 120px' }} />
+            style={{ padding: '6px 10px', border: '1.5px solid var(--ink)', borderRadius: 6, flex: '1 1 120px' }} />
           <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value as VehicleType })}
-            style={{ padding: '6px 10px', border: '1.5px solid #1f1f1f', borderRadius: 6 }}>
+            style={{ padding: '6px 10px', border: '1.5px solid var(--ink)', borderRadius: 6 }}>
             <option value="Auto">Auto</option>
             <option value="Motorrad">Motorrad</option>
             <option value="Fahrrad">Fahrrad</option>
           </select>
           <input placeholder="Fahrer" value={form.driver} onChange={(e) => setForm({ ...form, driver: e.target.value })}
-            style={{ padding: '6px 10px', border: '1.5px solid #1f1f1f', borderRadius: 6, flex: '1 1 120px' }} />
+            style={{ padding: '6px 10px', border: '1.5px solid var(--ink)', borderRadius: 6, flex: '1 1 120px' }} />
           <button className="btn pri" onClick={createVehicle}>Anlegen</button>
         </div>
       )}
