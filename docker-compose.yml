@@ -14,8 +14,8 @@ services:
       VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:you@example.com}
     volumes:
       - wartung-data:/app/data
-    expose:
-      - "4000"
+    ports:
+      - "${BACKEND_PORT:-4000}:4000"
 
   frontend:
     build: ./frontend

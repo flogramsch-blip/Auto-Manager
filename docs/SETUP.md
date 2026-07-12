@@ -84,6 +84,9 @@ npm run dev              # http://localhost:5173, proxies /api to :4000
 3. In the repo root, copy `.env.example` to `.env` and fill in:
    - `FRONTEND_URL` / `FRONTEND_PORT` — the NAS's LAN IP/hostname and the port you want
      to expose (default `8080`).
+   - `BACKEND_PORT` — the backend's API port (default `4000`), published to the host
+     so other apps on your LAN can reach it too (e.g. if you embed Auto-Manager into
+     another dashboard, as documented in the Family-Dashboard project).
    - Google and VAPID values from steps 1–2 above.
 4. From the repo root (via SSH):
    ```bash
