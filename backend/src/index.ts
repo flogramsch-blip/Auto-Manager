@@ -14,7 +14,28 @@ import { scheduleReminderCron } from './services/reminders.js';
 import { ensureVapidConfigured } from './services/push.js';
 
 const app = express();
-app.use(cors());
+
+// Nur bekannte Frontends dürfen per Browser zugreifen (eigenes Frontend + ggf.
+// eingebettete Kopien wie Family-Dashboard). Schützt zwar nicht vor direkten
+// Zugriffen im selben Netzwerk (dafür braucht es die NAS-Firewall, siehe
+// docs/SETUP.md), verhindert aber, dass eine beliebige Webseite im Hintergrund
+// im Browser Anfragen an die API schickt.
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || process.env.FRONTEND_URL || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Origin nicht erlaubt (siehe ALLOWED_ORIGINS)'));
+      }
+    },
+  })
+);
 app.use(express.json());
 
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
@@ -27,6 +48,13 @@ app.use('/api/workshops', workshopsRouter);
 app.use('/api/costs', costsRouter);
 app.use('/api/auth/google', authGoogleRouter);
 app.use('/api/push', pushRouter);
+
+// Generische Fehlerantwort statt Stacktrace/Dateipfaden nach außen (z.B. bei
+// abgelehntem CORS-Origin).
+app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error(err);
+  res.status(403).json({ error: 'forbidden' });
+});
 
 ensureVapidConfigured();
 scheduleReminderCron();

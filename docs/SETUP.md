@@ -87,6 +87,12 @@ npm run dev              # http://localhost:5173, proxies /api to :4000
    - `BACKEND_PORT` — the backend's API port (default `4000`), published to the host
      so other apps on your LAN can reach it too (e.g. if you embed Auto-Manager into
      another dashboard, as documented in the Family-Dashboard project).
+   - `ALLOWED_ORIGINS` — **important if you embed this into another app**: list every
+     frontend origin allowed to call the API, comma-separated (your own frontend's
+     `FRONTEND_URL` plus e.g. Family-Dashboard's address). If you update an existing
+     deployment and skip this, only your own frontend keeps working — the embedded
+     copy elsewhere will silently stop loading data until you add its origin here. See
+     "Sicherheit" below for why this exists.
    - Google and VAPID values from steps 1–2 above.
 4. From the repo root (via SSH):
    ```bash
@@ -102,6 +108,58 @@ npm run dev              # http://localhost:5173, proxies /api to :4000
 If you'd rather manage containers through the Container Manager UI instead of SSH, you
 can import `docker-compose.yml` there directly ("Project" → "Create" → "Import
 docker-compose.yml").
+
+## 5. Sicherheit — worauf du achten solltest
+
+Diese App hat **keine Anmeldung/kein Passwort** — das war eine bewusste Entscheidung für
+"einfach im eigenen Haushalt nutzbar", bedeutet aber: **jeder, der die Adresse in deinem
+WLAN erreicht, kann alle Fahrzeugdaten sehen und ändern.** Das ist für ein privates
+Heimnetz ein akzeptables Risiko, aber du solltest ein paar Dinge sicherstellen:
+
+1. **Nichts davon soll aus dem Internet erreichbar sein.** Docker/`docker-compose.yml`
+   öffnet Ports nur in deinem **lokalen** Netzwerk (WLAN/LAN zuhause) — das macht von
+   sich aus **nichts** im Internet sichtbar. Das würde nur passieren, wenn zusätzlich:
+   - dein Router eine **Port-Weiterleitung** für Port `8080` oder `4000` eingerichtet hat
+     (Router-Oberfläche → meist "Portfreigabe" oder "Port Forwarding" genannt), oder
+   - **UPnP** am Router aktiv ist und irgendein Gerät sich selbst eine Freigabe
+     eingerichtet hat, oder
+   - Synologys **"Externer Zugriff"/QuickConnect** (DSM → Systemsteuerung → Externer
+     Zugriff) für diese Ports konfiguriert wurde.
+
+   Prüfe kurz in deiner Router-Oberfläche und unter DSM → Systemsteuerung → Externer
+   Zugriff, ob dort etwas für Port 8080/4000 eingetragen ist — falls ja, entfernen. Diese
+   App braucht nie einen Zugriff von außerhalb deines Zuhauses.
+
+2. **Den neu geöffneten Datenbank-Port (`BACKEND_PORT`, Standard 4000) zusätzlich
+   einschränken**, falls du ihn nur für die Family-Dashboard-Einbettung brauchst — er
+   muss dann nur von *einem* bestimmten Gerät erreichbar sein, nicht vom ganzen Netz:
+   - DSM → **Systemsteuerung → Sicherheit → Firewall** → Firewall-Profil bearbeiten →
+     **Regel erstellen**.
+   - Port: benutzerdefiniert, `4000`, TCP.
+   - Quell-IP: die IP-Adresse deines Family-Dashboard-Rechners eintragen (z.B.
+     `192.168.1.60`).
+   - Aktion: **Erlauben** — und sicherstellen, dass darunter eine Regel steht, die
+     denselben Port für alle anderen Absender **ablehnt** (bei den meisten
+     DSM-Firewall-Profilen ist "alles andere verweigern" bereits die Voreinstellung,
+     wenn keine passende Erlauben-Regel greift — im Zweifel nachschauen oder mich
+     fragen).
+   - Falls du den Port gar nicht für eine Einbettung brauchst: `BACKEND_PORT` einfach
+     leer lassen bzw. die `ports:`-Zeile für den Backend-Dienst in `docker-compose.yml`
+     entfernen — dann ist die API wie ursprünglich nur für das eigene Frontend
+     erreichbar, nicht fürs restliche Netz.
+
+3. **CORS ist jetzt eingeschränkt** (`ALLOWED_ORIGINS`, siehe Schritt 4 oben) — das
+   verhindert, dass eine beliebige Webseite in einem Browser in deinem Netz im
+   Hintergrund Anfragen an die API schickt. Wichtig zu wissen: das schützt **nicht**
+   vor direktem Zugriff (z.B. über ein Kommandozeilen-Programm) von einem Gerät, das
+   ohnehin schon in deinem Netz ist — dafür ist Punkt 2 (Firewall) die eigentliche
+   Absicherung.
+
+4. **Gäste-WLAN**: falls Gäste-Geräte im selben Netzwerk wie NAS/Ubuntu-Rechner landen
+   (viele Router trennen Gäste-WLAN nicht wirklich vom Hauptnetz, sofern man es nicht
+   explizit als "isoliert" konfiguriert), können auch Gäste die App erreichen. In den
+   meisten Router-Einstellungen gibt es eine Option wie "Gäste vom Heimnetz isolieren" —
+   empfehlenswert zu aktivieren, unabhängig von dieser App.
 
 ### Notes on your existing setup
 
