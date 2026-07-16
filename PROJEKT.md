@@ -31,12 +31,23 @@ erweitert.
 
 ## Wo es läuft
 
-- **Synology NAS (DS423+)**: Auto-Manager, komplett (Frontend + Backend + Datenbank),
-  per Docker Compose. Erreichbar unter `http://<nas-ip>:8080` (Frontend) und
-  `http://<nas-ip>:4000` (Backend-API, siehe Sicherheit unten).
-- **Ubuntu-Rechner** (läuft auch Home Assistant, aber nicht integriert): Family-Dashboard,
-  per Docker Compose, erreichbar unter `http://<ubuntu-ip>:3080`. Spricht von dort aus
-  direkt die Auto-Manager-API auf der NAS an (cross-origin).
+Seit der Konsolidierung läuft **alles auf dem Ubuntu-Rechner** (24/7, ähnlich zuverlässig
+wie die NAS). Die NAS ist nur noch optionales Backup-Ziel, nicht mehr Live-Host.
+
+- **Ubuntu-Rechner** (läuft auch Home Assistant):
+  - **Auto-Manager** (Frontend + Backend + SQLite), per Docker Compose. Frontend unter
+    `http://<ubuntu-ip>:8080` (u.a. fürs Handy). Backend nicht mehr im LAN
+    veröffentlicht — nur intern im geteilten Docker-Netzwerk `familie-net` erreichbar.
+  - **Family-Dashboard** (Frontend + **eigenes Backend**, Node.js), per Docker Compose,
+    unter `http://<ubuntu-ip>:3080`. Das Dashboard-Backend spricht Home Assistant,
+    Wetter (Open-Meteo), ÖPNV (VBB), Müll (ICS), Google-Kalender und Sonos an. Die
+    eingebettete Auto-Manager-Seite erreicht dessen Backend intern über `familie-net`
+    (`http://auto-manager-backend:4000`).
+  - **Home Assistant** (nativ auf dem Host): steuert die Shelly-Geräte. Das
+    Dashboard-Backend erreicht es über `host.docker.internal:8123` mit einem
+    langlebigen Zugriffstoken.
+- **Synology NAS (DS423+)**: nur noch Backup-Ziel (siehe `scripts/backup-to-nas.sh` im
+  Family-Dashboard-Repo).
 - **Android-Tablet**: zeigt Family-Dashboard über den **Fully Kiosk Browser** im
   Kiosk-Modus an.
 
@@ -64,10 +75,21 @@ erweitert.
 - Frontend: React + Vite (JavaScript, kein TypeScript), eigenes CSS-Designsystem
   („Bahnhofs-Klappanzeigen"-Optik, dunkel) in `src/styles/tokens.css` +
   `components.css`
-- Aktuell nur Demo-Daten (Wetter/Kalender/ÖPNV/Shelly-Geräte simuliert) — echtes
-  Backend für Shelly-Steuerung, Wetter-API, BVG-API ist als „nächster Schritt“ in der
-  README vermerkt, aber noch nicht gebaut
-- Deployment: Docker Compose, ein Container (nginx + statischer Build)
+- **Backend: Node.js + Express (JavaScript, ESM)** in `backend/`. Spricht Home Assistant
+  (WebSocket), Open-Meteo, VBB (transport.rest), ICS-Müllkalender (node-ical),
+  Google-Kalender (googleapis) und Sonos (@svrooij/sonos). Keine Datenbank — die
+  gesamte ortsgebundene Konfiguration liegt in `backend/data/settings.json`, editierbar
+  über ein Einstellungs-Overlay (Zahnrad ⚙️) im Dashboard. Live-Updates gehen per
+  Server-Sent-Events ans Tablet.
+- **Konfigurierbarkeit:** Kein Ort/keine IP/kein Termin steht mehr im Code — alles wird
+  im Dashboard eingetragen (siehe `docs/EINZUGSTAG.md`). Jedes Widget hat einen
+  „nicht konfiguriert"-Zustand; nichts stürzt ab, wenn HA/eine Quelle fehlt.
+- **Gerätesteuerung über Home Assistant:** HA verwaltet die Shellys; das Backend mappt
+  HA-Entities auf das Dashboard-Gerätemodell (settings.ha.entities). Rollladen-Semantik
+  ist invertiert (Dashboard-pct 100 = zu, HA current_position 100 = offen).
+- Deployment: Docker Compose, zwei Container (`dashboard`/nginx + `backend`). nginx
+  reicht `/api` intern ans Backend weiter (SSE-tauglich), kein Backend-Port im LAN.
+  HA läuft nativ auf dem Host (`extra_hosts: host.docker.internal:host-gateway`).
 
 ## Wichtige Design-Entscheidungen (und warum)
 
@@ -111,15 +133,21 @@ Falls beim Weiterbauen ähnliche Layout-Probleme auftauchen:
 
 ## Offene Punkte / mögliche nächste Schritte
 
-- Family-Dashboard: echtes Backend für Shelly-Geräte, Wetter-API (Open-Meteo), BVG-API,
-  Google Calendar noch nicht gebaut (läuft mit Demo-Daten)
-- Home Assistant ist auf dem Ubuntu-Rechner installiert, aber nicht mit einer der beiden
-  Apps verknüpft
-- Falls sich die Netzwerk-Situation ändert (z.B. doch mal Zugriff von unterwegs
-  gewünscht): dann zwingend eine echte Anmeldung nachrüsten, nicht einfach Ports nach
-  außen freigeben
+- **Erledigt:** Family-Dashboard hat jetzt ein echtes Backend (Home Assistant, Wetter,
+  ÖPNV, Müll, Google-Kalender, Sonos), alles ortsgebundene konfigurierbar. Home
+  Assistant ist über das Dashboard-Backend angebunden.
+- **Am Einzugstag noch zu tun:** Werte im Dashboard eintragen (Ort, Haltestellen,
+  Müll-ICS-Link, WLAN, Sonos-IPs, Geräte-Zuordnung) und Google-Kalender einmalig
+  verbinden — Schritt-für-Schritt in `Family-Dashboard/docs/EINZUGSTAG.md`.
+- **Datenmigration NAS→Ubuntu** (Auto-Manager-Volume) läuft nach
+  `Umzug-Anleitung.md` (separat geliefert). Danach NAS als Backup via
+  `scripts/backup-to-nas.sh`.
+- Bewusst NICHT gebaut (kein echter Bedarf): Türklingel-Kamera-Overlay bleibt Demo;
+  „Weitere Räume"/Sonos-Gruppen nur rudimentär.
+- Falls sich die Netzwerk-Situation ändert (Zugriff von unterwegs gewünscht): dann
+  zwingend eine echte Anmeldung nachrüsten, nicht einfach Ports nach außen freigeben.
 - Performance-Verbesserungen (Lazy-Loading, Hintergrund-Refresh, Asset-Caching,
-  nächtlicher Kiosk-Reload) sind bereits umgesetzt
+  nächtlicher Kiosk-Reload) sind umgesetzt.
 
 ## Wie man wieder andockt
 
