@@ -1,5 +1,5 @@
 services:
-  backend:
+  auto-manager-backend:
     build: ./backend
     restart: unless-stopped
     environment:
@@ -15,16 +15,35 @@ services:
       VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:you@example.com}
     volumes:
       - wartung-data:/app/data
-    ports:
-      - "${BACKEND_PORT:-4000}:4000"
+    # Kein "ports:" mehr -> nicht vom restlichen LAN erreichbar, nur intern über das
+    # geteilte Docker-Netzwerk (z.B. für die Family-Dashboard-Einbettung auf demselben
+    # Rechner). Siehe docs/SETUP.md, Abschnitt "Auf demselben Rechner wie
+    # Family-Dashboard betreiben".
+    expose:
+      - "4000"
+    networks:
+      - default
+      - familie-net
 
-  frontend:
+  auto-manager-frontend:
     build: ./frontend
     restart: unless-stopped
     depends_on:
-      - backend
+      - auto-manager-backend
     ports:
       - "${FRONTEND_PORT:-8080}:80"
+    networks:
+      - default
+      - familie-net
+
+networks:
+  # Geteiltes Netzwerk mit anderen Projekten auf demselben Rechner (z.B.
+  # Family-Dashboard) -> muss einmalig existieren, siehe docs/SETUP.md.
+  # Falls du Auto-Manager allein betreibst (kein Family-Dashboard auf demselben
+  # Rechner), kannst du diesen Abschnitt sowie "familie-net" bei den Services oben
+  # weglassen.
+  familie-net:
+    external: true
 
 volumes:
   wartung-data:
