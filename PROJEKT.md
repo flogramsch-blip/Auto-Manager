@@ -49,7 +49,14 @@ wie die NAS). Die NAS ist nur noch optionales Backup-Ziel, nicht mehr Live-Host.
 - **Synology NAS (DS423+)**: nur noch Backup-Ziel (siehe `scripts/backup-to-nas.sh` im
   Family-Dashboard-Repo).
 - **Android-Tablet**: zeigt Family-Dashboard über den **Fully Kiosk Browser** im
-  Kiosk-Modus an.
+  Kiosk-Modus an. Weitere Browser-Geräte (zweites Tablet, iPad, Fire) können dieselbe
+  URL öffnen und sind per SSE automatisch synchron; das Layout ist responsiv.
+- **Optionale ESP32-Bedienpanels** (z. B. `ESP32-4848S040`, 4" 480×480, an der Haustür):
+  kleine Touch-Displays, die mit **ESPHome** geflasht werden und **direkt mit Home
+  Assistant** sprechen. Sie sind Mikrocontroller ohne Browser — zeigen also NICHT das
+  Web-Dashboard, bedienen aber über HA dieselben Lampen/Rollläden/Szenen und reagieren
+  auf dieselbe Türklingel. Flashfertige Vorlage + Anleitung im Family-Dashboard-Repo:
+  `esp32-panel/esp32-4848s040.yaml` und `docs/ESP32-PANEL.md`.
 
 ## Repos
 
@@ -148,6 +155,14 @@ Falls beim Weiterbauen ähnliche Layout-Probleme auftauchen:
   öffnet automatisch das Kamerabild (HA-`binary_sensor` → SSE `doorbell`), Sonos-Gruppen
   (join/unjoin), Wetter mit Wind/Regenrisiko/Sonnenzeiten/Beschreibung, dynamisches
   auto-fit-Layout (Kacheln wachsen mit der Gerätezahl mit).
+- **Mehrere Anzeige-Geräte (Stand: fertig):** (a) Das Dashboard-Frontend ist responsiv
+  (CSS-Breakpoints: ≥1200px 3-spaltig wie bisher, ~1024px 2-spaltig, ≤760px einspaltig
+  gestapelt + vertikal scrollend) — weitere Browser-Tablets/iPad/Fire laufen sauber und
+  sind per SSE synchron. (b) Optionale ESP32-Touch-Panels (`ESP32-4848S040`) über ESPHome
+  direkt an HA: Vorlage `esp32-panel/esp32-4848s040.yaml` + `docs/ESP32-PANEL.md` im
+  Family-Dashboard-Repo. Hinweis: Die ESPHome-YAML ist eine kommentierte Vorlage, die der
+  Nutzer mit `esphome compile` validiert/flasht; der Display-Hardware-Block ist der einzige
+  board-spezifische Teil (ST7701S/GT911, Pinout markiert).
 - Falls sich die Netzwerk-Situation ändert (Zugriff von unterwegs gewünscht): dann
   zwingend eine echte Anmeldung nachrüsten, nicht einfach Ports nach außen freigeben.
 - Performance-Verbesserungen (Lazy-Loading, Hintergrund-Refresh, Asset-Caching,
