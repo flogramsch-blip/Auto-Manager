@@ -137,13 +137,17 @@ Falls beim Weiterbauen ähnliche Layout-Probleme auftauchen:
   ÖPNV, Müll, Google-Kalender, Sonos), alles ortsgebundene konfigurierbar. Home
   Assistant ist über das Dashboard-Backend angebunden.
 - **Am Einzugstag noch zu tun:** Werte im Dashboard eintragen (Ort, Haltestellen,
-  Müll-ICS-Link, WLAN, Sonos-IPs, Geräte-Zuordnung) und Google-Kalender einmalig
-  verbinden — Schritt-für-Schritt in `Family-Dashboard/docs/EINZUGSTAG.md`.
+  Müll-ICS-Link, WLAN, Sonos-IPs, Geräte-Zuordnung inkl. Kameras + Klingel) und
+  Google-Kalender einmalig verbinden — Schritt-für-Schritt in
+  `Family-Dashboard/docs/EINZUGSTAG.md`.
 - **Datenmigration NAS→Ubuntu** (Auto-Manager-Volume) läuft nach
   `Umzug-Anleitung.md` (separat geliefert). Danach NAS als Backup via
   `scripts/backup-to-nas.sh`.
-- Bewusst NICHT gebaut (kein echter Bedarf): Türklingel-Kamera-Overlay bleibt Demo;
-  „Weitere Räume"/Sonos-Gruppen nur rudimentär.
+- **Jetzt ebenfalls echt (Stand: komplett fertig):** Kameras über HA (`camera.*`,
+  Backend proxyt Stream mit Token; Kamera-Kacheln, Antippen vergrößert), Türklingel
+  öffnet automatisch das Kamerabild (HA-`binary_sensor` → SSE `doorbell`), Sonos-Gruppen
+  (join/unjoin), Wetter mit Wind/Regenrisiko/Sonnenzeiten/Beschreibung, dynamisches
+  auto-fit-Layout (Kacheln wachsen mit der Gerätezahl mit).
 - Falls sich die Netzwerk-Situation ändert (Zugriff von unterwegs gewünscht): dann
   zwingend eine echte Anmeldung nachrüsten, nicht einfach Ports nach außen freigeben.
 - Performance-Verbesserungen (Lazy-Loading, Hintergrund-Refresh, Asset-Caching,
